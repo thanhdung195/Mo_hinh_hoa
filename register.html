@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitTrack — Register</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg">
+      <div class="bg__image" aria-hidden="true"></div>
+      <div class="bg__glow bg__glow--a" aria-hidden="true"></div>
+      <div class="bg__glow bg__glow--b" aria-hidden="true"></div>
+      <div class="bg__vignette" aria-hidden="true"></div>
+    </div>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <a class="brand" href="./index.html">
+          <span class="brand__dot" aria-hidden="true"></span>
+          <span class="brand__name">FitTrack</span>
+        </a>
+
+        <nav class="nav" aria-label="Primary">
+          <a class="nav__link" href="./index.html">Home</a>
+          <a class="nav__link" href="./how-it-works.html">How it works</a>
+          <a class="nav__link" href="./progress.html">Progress</a>
+          <a class="nav__link" href="./contact.html">Contact</a>
+        </nav>
+
+        <div class="topbar__actions">
+          <a class="btn btn--ghost" href="./login.html">Login</a>
+          <a class="btn btn--primary" href="./register.html">Register</a>
+          <button class="iconbtn topbar__menu" type="button" aria-label="Open menu" data-menu>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="auth">
+      <div class="container auth__wrap">
+        <section class="authCard card" aria-label="Register form">
+          <div class="authCard__top" aria-hidden="true">
+            <div class="authCard__shade"></div>
+            <div class="authCard__brand">
+              <span class="authCard__mark" aria-hidden="true"></span>
+              <span class="authCard__name">VIGOR</span>
+            </div>
+          </div>
+
+          <div class="authCard__body">
+            <h1 class="authCard__title">Create Account</h1>
+            <p class="authCard__sub">Start tracking with clarity from day one.</p>
+
+            <form class="authForm" action="/auth/register" method="post">
+              <label class="authField">
+                <span class="authField__label">Full name</span>
+                <div class="authField__control">
+                  <span class="authField__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M4 21a8 8 0 0 1 16 0"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </span>
+                  <input class="authField__input" name="name" type="text" placeholder="John Doe" autocomplete="name" />
+                </div>
+              </label>
+
+              <label class="authField">
+                <span class="authField__label">Email address</span>
+                <div class="authField__control">
+                  <span class="authField__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M4 7h16v10H4V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                      <path
+                        d="m5 8 7 6 7-6"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <input class="authField__input" name="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+                </div>
+              </label>
+
+              <label class="authField">
+                <span class="authField__label">Password</span>
+                <div class="authField__control">
+                  <span class="authField__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      <path
+                        d="M6.5 11h11a1.5 1.5 0 0 1 1.5 1.5V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6.5A1.5 1.5 0 0 1 6.5 11Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <input
+                    class="authField__input"
+                    name="password"
+                    type="password"
+                    placeholder="••••••••"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                  />
+                </div>
+              </label>
+
+              <button class="btn btn--primary btn--lg authForm__submit" type="submit">
+                Register
+                <span aria-hidden="true">→</span>
+              </button>
+
+              <p class="authForm__foot">
+                Already have an account?
+                <a class="authForm__link" href="./login.html">Sign in</a>
+              </p>
+            </form>
+          </div>
+
+          <div class="authCard__bottom">
+            <a href="#" class="authCard__mini">TERMS</a>
+            <a href="#" class="authCard__mini">PRIVACY</a>
+            <a href="#" class="authCard__mini">SUPPORT</a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div class="mobilemenu" data-mobilemenu>
+      <div class="mobilemenu__panel card" role="dialog" aria-modal="true" aria-label="Mobile menu">
+        <div class="mobilemenu__top">
+          <span class="brand__name">Menu</span>
+          <button class="iconbtn" type="button" aria-label="Close menu" data-menu-close>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div class="mobilemenu__links">
+          <a class="mobilemenu__link" href="./index.html">Home</a>
+          <a class="mobilemenu__link" href="./how-it-works.html">How it works</a>
+          <a class="mobilemenu__link" href="./progress.html">Progress</a>
+          <a class="mobilemenu__link" href="./contact.html">Contact</a>
+          <a class="mobilemenu__link" href="./login.html">Login</a>
+          <a class="mobilemenu__link" href="./register.html">Register</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+

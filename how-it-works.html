@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitTrack — How it works</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg">
+      <div class="bg__image" aria-hidden="true"></div>
+      <div class="bg__glow bg__glow--a" aria-hidden="true"></div>
+      <div class="bg__glow bg__glow--b" aria-hidden="true"></div>
+      <div class="bg__vignette" aria-hidden="true"></div>
+    </div>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <a class="brand" href="./index.html">
+          <span class="brand__dot" aria-hidden="true"></span>
+          <span class="brand__name">FitTrack</span>
+        </a>
+
+        <nav class="nav" aria-label="Primary">
+          <a class="nav__link" href="./index.html">Home</a>
+          <a class="nav__link" href="./how-it-works.html">How it works</a>
+          <a class="nav__link" href="./progress.html">Progress</a>
+          <a class="nav__link" href="./contact.html">Contact</a>
+        </nav>
+
+        <div class="topbar__actions">
+          <a class="btn btn--ghost" href="./login.html">Login</a>
+          <a class="btn btn--primary" href="./register.html">Register</a>
+          <button class="iconbtn topbar__menu" type="button" aria-label="Open menu" data-menu>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero hero--compact">
+        <div class="container hero__grid hero__grid--media">
+          <div class="hero__copy">
+            <h1 class="h1">
+              How <span class="accent">FitTrack</span><br />
+              Works
+            </h1>
+            <p class="lead">
+              From plan to progress—FitTrack helps you log sessions, learn from trends, and stay consistent over weeks.
+            </p>
+            <div class="hero__cta">
+              <a class="btn btn--primary btn--lg" href="./contact.html">Build your journey</a>
+              <a class="btn btn--ghost btn--lg" href="./progress.html">View progress</a>
+            </div>
+          </div>
+
+          <aside class="media card">
+            <div class="media__frame" aria-hidden="true">
+              <div class="media__chrome">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="media__content">
+                <div class="media__left">
+                  <div class="media__row"></div>
+                  <div class="media__row media__row--b"></div>
+                  <div class="media__row media__row--c"></div>
+                  <div class="media__row media__row--d"></div>
+                </div>
+                <div class="media__right">
+                  <div class="media__pill"></div>
+                  <div class="media__pill media__pill--b"></div>
+                  <div class="media__pill media__pill--c"></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section__head">
+            <h2 class="h2">Your 4-Step Transformation</h2>
+          </div>
+
+          <div class="steps steps--cards">
+            <article class="step card">
+              <div class="step__top">
+                <span class="step__bubble">1</span>
+                <span class="step__tag">Account</span>
+              </div>
+              <h3 class="h3">Create an account</h3>
+              <p class="muted">Start with goals, schedule, and your current training style.</p>
+            </article>
+            <article class="step card">
+              <div class="step__top">
+                <span class="step__bubble">2</span>
+                <span class="step__tag">Plan</span>
+              </div>
+              <h3 class="h3">Build a workout plan</h3>
+              <p class="muted">Use templates or create your own split with exercises and targets.</p>
+            </article>
+            <article class="step card">
+              <div class="step__top">
+                <span class="step__bubble">3</span>
+                <span class="step__tag">Log</span>
+              </div>
+              <h3 class="h3">Log workout sessions</h3>
+              <p class="muted">Fast set entry, smart defaults, and clean rest timers.</p>
+            </article>
+            <article class="step card">
+              <div class="step__top">
+                <span class="step__bubble">4</span>
+                <span class="step__tag">Improve</span>
+              </div>
+              <h3 class="h3">Monitor progress</h3>
+              <p class="muted">Trends and PRs show what’s working—and what to adjust.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container how__grid">
+          <div class="how__mock">
+            <div class="card mock">
+              <div class="mock__head">
+                <span class="mock__title">Strength</span>
+                <span class="chip">Week 3</span>
+              </div>
+              <div class="mock__bars">
+                <div class="mock__bar"><span style="--w: 0.78"></span></div>
+                <div class="mock__bar"><span style="--w: 0.52"></span></div>
+                <div class="mock__bar"><span style="--w: 0.66"></span></div>
+              </div>
+              <div class="mock__row">
+                <div class="mock__label">Cardio</div>
+                <div class="mock__pill">Mon/Wed/Fri</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="how__copy">
+            <h2 class="h2">Advanced Workout Planning Showcase</h2>
+            <p class="muted">
+              Set up a plan that matches your reality: exercises, targets, accessories, and deload weeks—all organized
+              into a clean workflow.
+            </p>
+            <ul class="list">
+              <li class="list__item"><span class="list__dot" aria-hidden="true"></span>Reusable day templates.</li>
+              <li class="list__item"><span class="list__dot" aria-hidden="true"></span>Auto-suggest weights from history.</li>
+              <li class="list__item"><span class="list__dot" aria-hidden="true"></span>Progressive overload guardrails.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container how__grid how__grid--reverse">
+          <div class="how__copy">
+            <h2 class="h2">Precision Logging at Your Fingertips</h2>
+            <p class="muted">
+              Log sets in seconds. Keep notes, track RPE, and review your last performance without leaving the session.
+            </p>
+            <div class="note card">
+              <div class="note__row">
+                <span class="note__tag">Last set</span>
+                <span class="note__val">90 kg × 5</span>
+              </div>
+              <div class="note__row">
+                <span class="note__tag">Cue</span>
+                <span class="note__val">Brace harder, pause 1s</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="how__mock">
+            <div class="card mock mock--list">
+              <div class="mock__head">
+                <span class="mock__title">Evening Lift</span>
+                <span class="chip">Done</span>
+              </div>
+              <div class="exercise">
+                <div class="exercise__name">Bench Press</div>
+                <div class="exercise__meta muted">5×5 • RPE 7.5</div>
+              </div>
+              <div class="exercise">
+                <div class="exercise__name">Row</div>
+                <div class="exercise__meta muted">4×8 • controlled</div>
+              </div>
+              <div class="exercise">
+                <div class="exercise__name">Accessory</div>
+                <div class="exercise__meta muted">3×12 • pump</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section__head">
+            <h2 class="h2">Visualize Your Ambitions</h2>
+          </div>
+
+          <div class="stats">
+            <div class="stat card">
+              <div class="stat__k muted">Avg intensity</div>
+              <div class="stat__v">82.4</div>
+              <div class="stat__bar"><span style="--w: 0.82"></span></div>
+            </div>
+            <div class="stat card">
+              <div class="stat__k muted">Sessions/week</div>
+              <div class="stat__v">4/5</div>
+              <div class="stat__bar"><span style="--w: 0.72"></span></div>
+            </div>
+            <div class="stat card">
+              <div class="stat__k muted">PRs this month</div>
+              <div class="stat__v">14</div>
+              <div class="stat__bar"><span style="--w: 0.64"></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="strip">
+        <div class="container strip__grid">
+          <div class="strip__item">
+            <div class="strip__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3v18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M7 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="strip__title">Consistency</div>
+            <div class="strip__text muted">Build habits with streaks and reminders.</div>
+          </div>
+          <div class="strip__item">
+            <div class="strip__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 16l4-4 3 3 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="strip__title">Clear progress</div>
+            <div class="strip__text muted">Trends you can understand in seconds.</div>
+          </div>
+          <div class="strip__item">
+            <div class="strip__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3l3 6 6 .8-4.4 4.3 1.1 6-5.7-3-5.7 3 1.1-6L3 9.8 9 9l3-6Z" stroke="currentColor" stroke-width="2" />
+              </svg>
+            </div>
+            <div class="strip__title">Science-backed</div>
+            <div class="strip__text muted">Better decisions with better data.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="cta card">
+            <h2 class="h2">See Your Progress More<br />Clearly with FitTrack</h2>
+            <p class="muted">A clean system that helps you stay consistent and improve.</p>
+            <div class="cta__actions">
+              <a class="btn btn--primary btn--lg" href="./contact.html">Get started</a>
+              <a class="btn btn--ghost btn--lg" href="./progress.html">Explore dashboard</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__grid">
+        <div class="footer__brand">
+          <a class="brand" href="./index.html">
+            <span class="brand__dot" aria-hidden="true"></span>
+            <span class="brand__name">FitTrack</span>
+          </a>
+          <p class="muted">A modern workout log to help you train with intention and track results.</p>
+        </div>
+        <div class="footer__cols">
+          <div class="footer__col">
+            <div class="footer__title">Pages</div>
+            <a class="footer__link" href="./index.html">Home</a>
+            <a class="footer__link" href="./how-it-works.html">How it works</a>
+            <a class="footer__link" href="./progress.html">Progress</a>
+          </div>
+          <div class="footer__col">
+            <div class="footer__title">Contact</div>
+            <a class="footer__link" href="./contact.html">Contact</a>
+            <a class="footer__link" href="./contact.html#faq">FAQ</a>
+            <a class="footer__link" href="./contact.html#privacy">Privacy</a>
+          </div>
+          <div class="footer__col">
+            <div class="footer__title">Social</div>
+            <a class="footer__link" href="#">Twitter</a>
+            <a class="footer__link" href="#">GitHub</a>
+            <a class="footer__link" href="#">Dribbble</a>
+          </div>
+        </div>
+      </div>
+      <div class="container footer__bottom">
+        <span class="muted">© <span data-year></span> FitTrack. All rights reserved.</span>
+        <div class="footer__social">
+          <a class="social" href="#" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M20 7.5c-.6.3-1.2.4-1.9.5.7-.4 1.1-1 1.4-1.8-.6.4-1.3.7-2 .8a3 3 0 0 0-5.1 2c0 .2 0 .5.1.7A8.5 8.5 0 0 1 4.6 5.9a3 3 0 0 0 .9 4c-.5 0-1-.2-1.4-.4v.1c0 1.5 1.1 2.8 2.5 3.1-.4.1-.8.1-1.2.1-.2 0-.4 0-.6-.1.4 1.3 1.7 2.3 3.2 2.3A6 6 0 0 1 4 19.3a8.5 8.5 0 0 0 4.6 1.3c5.5 0 8.6-4.6 8.6-8.6v-.4c.6-.4 1.1-1 1.5-1.6Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a class="social" href="#" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M9 19c-4 1.5-4-2-5-2m10 4v-3c0-.9.3-1.7.8-2.3-2.7-.3-5.6-1.3-5.6-6a4.6 4.6 0 0 1 1.2-3.1 4.2 4.2 0 0 1 .1-3s1-.3 3.2 1.2a11 11 0 0 1 5.8 0C16.7 1.1 17.7 1.4 17.7 1.4a4.2 4.2 0 0 1 .1 3 4.6 4.6 0 0 1 1.2 3.1c0 4.7-2.9 5.7-5.6 6 .5.6.8 1.4.8 2.3v3"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a class="social" href="#" aria-label="Dribbble">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" stroke="currentColor" stroke-width="1.6" />
+              <path
+                d="M5 7.5c3.8 2.2 7.4 3.2 11.9 3.2"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+              <path
+                d="M7 19c1-3.7 2.9-7.2 6-12.4"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+              <path
+                d="M21 12c-4.2-1.1-7.9-.7-11.6 1.3"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <div class="mobilemenu" data-mobilemenu>
+      <div class="mobilemenu__panel card" role="dialog" aria-modal="true" aria-label="Mobile menu">
+        <div class="mobilemenu__top">
+          <span class="brand__name">Menu</span>
+          <button class="iconbtn" type="button" aria-label="Close menu" data-menu-close>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div class="mobilemenu__links">
+          <a class="mobilemenu__link" href="./index.html">Home</a>
+          <a class="mobilemenu__link" href="./how-it-works.html">How it works</a>
+          <a class="mobilemenu__link" href="./progress.html">Progress</a>
+          <a class="mobilemenu__link" href="./contact.html">Contact</a>
+        </div>
+        <div class="mobilemenu__actions">
+          <a class="btn btn--primary btn--lg" href="./register.html">Register</a>
+          <a class="btn btn--ghost btn--lg" href="./login.html">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+

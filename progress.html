@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitTrack — Progress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg">
+      <div class="bg__image" aria-hidden="true"></div>
+      <div class="bg__glow bg__glow--a" aria-hidden="true"></div>
+      <div class="bg__glow bg__glow--b" aria-hidden="true"></div>
+      <div class="bg__vignette" aria-hidden="true"></div>
+    </div>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <a class="brand" href="./index.html">
+          <span class="brand__dot" aria-hidden="true"></span>
+          <span class="brand__name">FitTrack</span>
+        </a>
+
+        <nav class="nav" aria-label="Primary">
+          <a class="nav__link" href="./index.html">Home</a>
+          <a class="nav__link" href="./how-it-works.html">How it works</a>
+          <a class="nav__link" href="./progress.html">Progress</a>
+          <a class="nav__link" href="./contact.html">Contact</a>
+        </nav>
+
+        <div class="topbar__actions">
+          <a class="btn btn--ghost" href="./login.html">Login</a>
+          <a class="btn btn--primary" href="./register.html">Register</a>
+          <button class="iconbtn topbar__menu" type="button" aria-label="Open menu" data-menu>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero hero--center">
+        <div class="container">
+          <h1 class="h1">Track Real Progress,<br />Not Just Workouts</h1>
+          <p class="lead lead--center">
+            Turn your training into insights: weight trends, consistency, goals, and weekly summaries—all in one clean
+            dashboard.
+          </p>
+          <div class="hero__cta hero__cta--center">
+            <a class="btn btn--primary btn--lg" href="./contact.html">Start Your Transformation</a>
+            <a class="btn btn--ghost btn--lg" href="./how-it-works.html">View Demo</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--tight">
+        <div class="container">
+          <div class="dash card">
+            <div class="dash__main card">
+              <div class="card__header">
+                <div>
+                  <div class="card__kicker">Weight Trend</div>
+                  <div class="card__title">Last 90 days</div>
+                </div>
+                <span class="chip">72.4 kg</span>
+              </div>
+
+              <div class="chart chart--line chart--line2" role="img" aria-label="Weight trend line chart">
+                <svg viewBox="0 0 560 240" width="100%" height="240" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="wLine" x1="0" x2="1">
+                      <stop offset="0" stop-color="rgba(123,178,255,0.95)" />
+                      <stop offset="1" stop-color="rgba(123,178,255,0.55)" />
+                    </linearGradient>
+                    <linearGradient id="wArea" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0" stop-color="rgba(123,178,255,0.24)" />
+                      <stop offset="1" stop-color="rgba(123,178,255,0.01)" />
+                    </linearGradient>
+                  </defs>
+
+                  <g opacity="0.22">
+                    <path d="M40 30H520" stroke="rgba(255,255,255,0.10)" />
+                    <path d="M40 80H520" stroke="rgba(255,255,255,0.08)" />
+                    <path d="M40 130H520" stroke="rgba(255,255,255,0.06)" />
+                    <path d="M40 180H520" stroke="rgba(255,255,255,0.05)" />
+                  </g>
+
+                  <path
+                    d="M40 170 C 80 150, 120 165, 160 152 C 200 140, 240 124, 280 132 C 320 140, 360 120, 400 110 C 440 100, 480 86, 520 92 L 520 210 L 40 210 Z"
+                    fill="url(#wArea)"
+                  />
+                  <path
+                    d="M40 170 C 80 150, 120 165, 160 152 C 200 140, 240 124, 280 132 C 320 140, 360 120, 400 110 C 440 100, 480 86, 520 92"
+                    fill="none"
+                    stroke="url(#wLine)"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <aside class="dash__side">
+              <div class="kpi card">
+                <div class="kpi__k muted">14 Days</div>
+                <div class="kpi__v">Streak</div>
+                <div class="kpi__bar"><span style="--w: 0.62"></span></div>
+              </div>
+              <div class="kpi card">
+                <div class="kpi__k muted">Consistency</div>
+                <div class="kpi__v">85%</div>
+                <div class="kpi__bar"><span style="--w: 0.85"></span></div>
+              </div>
+              <div class="kpi card">
+                <div class="kpi__k muted">Volume</div>
+                <div class="kpi__v">12,400</div>
+                <div class="kpi__bar"><span style="--w: 0.72"></span></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--tight">
+        <div class="container">
+          <div class="section__head section__head--left">
+            <h2 class="h2">Body Metrics</h2>
+          </div>
+          <div class="metrics">
+            <div class="metric card">
+              <div class="metric__k muted">Weight</div>
+              <div class="metric__v">72.0 <span class="metric__u">kg</span></div>
+              <div class="metric__spark"><span style="--w: 0.74"></span></div>
+            </div>
+            <div class="metric card">
+              <div class="metric__k muted">BMI</div>
+              <div class="metric__v">22.5</div>
+              <div class="metric__spark"><span style="--w: 0.58"></span></div>
+            </div>
+            <div class="metric card">
+              <div class="metric__k muted">Body fat</div>
+              <div class="metric__v">15 <span class="metric__u">%</span></div>
+              <div class="metric__spark"><span style="--w: 0.46"></span></div>
+            </div>
+            <div class="metric card">
+              <div class="metric__k muted">PRs</div>
+              <div class="metric__v">+12</div>
+              <div class="metric__spark"><span style="--w: 0.68"></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--tight">
+        <div class="container goals">
+          <div class="goals__left">
+            <div class="section__head section__head--left">
+              <h2 class="h2">Your Goals</h2>
+            </div>
+            <div class="goal card">
+              <div class="goal__top">
+                <div>
+                  <div class="goal__name">Lose 3kg body fat</div>
+                  <div class="muted">8 weeks</div>
+                </div>
+                <div class="chip">60%</div>
+              </div>
+              <div class="progress"><span class="progress__bar" style="--p: 0.60"></span></div>
+            </div>
+            <div class="goal card">
+              <div class="goal__top">
+                <div>
+                  <div class="goal__name">4 workouts / week</div>
+                  <div class="muted">Current streak 14 days</div>
+                </div>
+                <div class="chip">8/14</div>
+              </div>
+              <div class="progress"><span class="progress__bar" style="--p: 0.57"></span></div>
+            </div>
+          </div>
+
+          <div class="goals__right">
+            <div class="section__head section__head--left">
+              <h2 class="h2">Reporting Styles</h2>
+            </div>
+            <div class="reports">
+              <div class="report card">
+                <div class="report__title">Training intensity</div>
+                <div class="donut" aria-hidden="true">
+                  <svg viewBox="0 0 120 120" width="120" height="120">
+                    <circle cx="60" cy="60" r="44" stroke="rgba(255,255,255,.10)" stroke-width="12" fill="none" />
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="44"
+                      stroke="rgba(123,178,255,.90)"
+                      stroke-width="12"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-dasharray="276"
+                      stroke-dashoffset="69"
+                      transform="rotate(-90 60 60)"
+                    />
+                    <text x="60" y="64" text-anchor="middle" fill="rgba(255,255,255,.92)" font-weight="800" font-size="22">
+                      75%
+                    </text>
+                  </svg>
+                </div>
+              </div>
+              <div class="report card">
+                <div class="report__title">Volume trends</div>
+                <div class="bars" aria-hidden="true">
+                  <span style="--h: 0.35"></span>
+                  <span style="--h: 0.55"></span>
+                  <span style="--h: 0.42"></span>
+                  <span style="--h: 0.72"></span>
+                  <span style="--h: 0.62"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section__head section__head--left">
+            <h2 class="h2">Achievements</h2>
+          </div>
+          <div class="achievements">
+            <div class="badgecard">
+              <div class="badgecard__icon">🏅</div>
+              <div class="badgecard__name">Milestone</div>
+            </div>
+            <div class="badgecard">
+              <div class="badgecard__icon">🔥</div>
+              <div class="badgecard__name">Consistency</div>
+            </div>
+            <div class="badgecard">
+              <div class="badgecard__icon">⬆</div>
+              <div class="badgecard__name">PR Up</div>
+            </div>
+            <div class="badgecard">
+              <div class="badgecard__icon">⏱</div>
+              <div class="badgecard__name">On time</div>
+            </div>
+
+            <div class="card weekly">
+              <div class="weekly__title">Weekly Success!</div>
+              <div class="muted">You hit your target sessions. Keep the streak alive.</div>
+              <div class="weekly__actions">
+                <a class="btn btn--primary" href="./contact.html">Start Program</a>
+                <a class="btn btn--ghost" href="./how-it-works.html">View plan</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="cta card cta--blue">
+            <h2 class="h2">Start Tracking Your Fitness<br />Progress Today</h2>
+            <p class="muted">A clean dashboard that makes improvement obvious.</p>
+            <div class="cta__actions">
+              <a class="btn btn--primary btn--lg" href="./contact.html">Create Free Account</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__grid">
+        <div class="footer__brand">
+          <a class="brand" href="./index.html">
+            <span class="brand__dot" aria-hidden="true"></span>
+            <span class="brand__name">FitTrack</span>
+          </a>
+          <p class="muted">A modern workout log to help you train with intention and track results.</p>
+        </div>
+        <div class="footer__cols">
+          <div class="footer__col">
+            <div class="footer__title">Pages</div>
+            <a class="footer__link" href="./index.html">Home</a>
+            <a class="footer__link" href="./how-it-works.html">How it works</a>
+            <a class="footer__link" href="./progress.html">Progress</a>
+          </div>
+          <div class="footer__col">
+            <div class="footer__title">Contact</div>
+            <a class="footer__link" href="./contact.html">Contact</a>
+            <a class="footer__link" href="./contact.html#faq">FAQ</a>
+            <a class="footer__link" href="./contact.html#privacy">Privacy</a>
+          </div>
+          <div class="footer__col">
+            <div class="footer__title">Social</div>
+            <a class="footer__link" href="#">Twitter</a>
+            <a class="footer__link" href="#">GitHub</a>
+            <a class="footer__link" href="#">Dribbble</a>
+          </div>
+        </div>
+      </div>
+      <div class="container footer__bottom">
+        <span class="muted">© <span data-year></span> FitTrack. All rights reserved.</span>
+        <div class="footer__social">
+          <a class="social" href="#" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M20 7.5c-.6.3-1.2.4-1.9.5.7-.4 1.1-1 1.4-1.8-.6.4-1.3.7-2 .8a3 3 0 0 0-5.1 2c0 .2 0 .5.1.7A8.5 8.5 0 0 1 4.6 5.9a3 3 0 0 0 .9 4c-.5 0-1-.2-1.4-.4v.1c0 1.5 1.1 2.8 2.5 3.1-.4.1-.8.1-1.2.1-.2 0-.4 0-.6-.1.4 1.3 1.7 2.3 3.2 2.3A6 6 0 0 1 4 19.3a8.5 8.5 0 0 0 4.6 1.3c5.5 0 8.6-4.6 8.6-8.6v-.4c.6-.4 1.1-1 1.5-1.6Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a class="social" href="#" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M9 19c-4 1.5-4-2-5-2m10 4v-3c0-.9.3-1.7.8-2.3-2.7-.3-5.6-1.3-5.6-6a4.6 4.6 0 0 1 1.2-3.1 4.2 4.2 0 0 1 .1-3s1-.3 3.2 1.2a11 11 0 0 1 5.8 0C16.7 1.1 17.7 1.4 17.7 1.4a4.2 4.2 0 0 1 .1 3 4.6 4.6 0 0 1 1.2 3.1c0 4.7-2.9 5.7-5.6 6 .5.6.8 1.4.8 2.3v3"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a class="social" href="#" aria-label="Dribbble">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" stroke="currentColor" stroke-width="1.6" />
+              <path
+                d="M5 7.5c3.8 2.2 7.4 3.2 11.9 3.2"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+              <path
+                d="M7 19c1-3.7 2.9-7.2 6-12.4"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+              <path
+                d="M21 12c-4.2-1.1-7.9-.7-11.6 1.3"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <div class="mobilemenu" data-mobilemenu>
+      <div class="mobilemenu__panel card" role="dialog" aria-modal="true" aria-label="Mobile menu">
+        <div class="mobilemenu__top">
+          <span class="brand__name">Menu</span>
+          <button class="iconbtn" type="button" aria-label="Close menu" data-menu-close>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div class="mobilemenu__links">
+          <a class="mobilemenu__link" href="./index.html">Home</a>
+          <a class="mobilemenu__link" href="./how-it-works.html">How it works</a>
+          <a class="mobilemenu__link" href="./progress.html">Progress</a>
+          <a class="mobilemenu__link" href="./contact.html">Contact</a>
+        </div>
+        <div class="mobilemenu__actions">
+          <a class="btn btn--primary btn--lg" href="./register.html">Register</a>
+          <a class="btn btn--ghost btn--lg" href="./login.html">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+

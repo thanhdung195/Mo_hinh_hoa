@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitTrack — Landing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg">
+      <div class="bg__image" aria-hidden="true"></div>
+      <div class="bg__glow bg__glow--a" aria-hidden="true"></div>
+      <div class="bg__glow bg__glow--b" aria-hidden="true"></div>
+      <div class="bg__vignette" aria-hidden="true"></div>
+    </div>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <a class="brand" href="#">
+          <span class="brand__dot" aria-hidden="true"></span>
+          <span class="brand__name">FitTrack</span>
+        </a>
+
+        <nav class="nav" aria-label="Primary">
+          <a class="nav__link" href="./index.html">Home</a>
+          <a class="nav__link" href="./how-it-works.html">How it works</a>
+          <a class="nav__link" href="./progress.html">Progress</a>
+          <a class="nav__link" href="./contact.html">Contact</a>
+        </nav>
+
+        <div class="topbar__actions">
+          <a class="btn btn--ghost" href="./login.html">Login</a>
+          <a class="btn btn--primary" href="./register.html">Register</a>
+          <button class="iconbtn topbar__menu" type="button" aria-label="Open menu" data-menu>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="start">
+        <div class="container hero__grid">
+          <div class="hero__copy">
+            <p class="pill">
+              <span class="pill__dot" aria-hidden="true"></span>
+              Your workouts, simplified
+            </p>
+            <h1 class="h1">
+              Track Your Workouts.
+              <span class="accent">Build</span>
+              <br />
+              Your Progress.
+            </h1>
+            <p class="lead">
+              A modern training log built for consistency. Track sessions, visualize progress, and stay motivated with
+              beautiful insights.
+            </p>
+
+            <div class="hero__cta">
+              <a class="btn btn--primary btn--lg" href="#pricing">Get started today</a>
+              <a class="btn btn--ghost btn--lg" href="#demo">View demo</a>
+            </div>
+
+            <div class="meta">
+              <div class="meta__item">
+                <div class="meta__value">600+</div>
+                <div class="meta__label">Athletes</div>
+              </div>
+              <div class="meta__item">
+                <div class="meta__value">12k</div>
+                <div class="meta__label">Workouts</div>
+              </div>
+              <div class="meta__item">
+                <div class="meta__value">4.9</div>
+                <div class="meta__label">Rating</div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="hero__card card">
+            <div class="card__header">
+              <div>
+                <div class="card__kicker">Weekly Summary</div>
+                <div class="card__title">Strength Volume</div>
+              </div>
+              <div class="badge">
+                <span class="badge__dot" aria-hidden="true"></span>
+                Live
+              </div>
+            </div>
+
+            <div class="summary">
+              <div class="summary__stat">
+                <div class="summary__big">12,400 kg</div>
+                <div class="summary__sub">Total lifted</div>
+              </div>
+              <div class="summary__stat">
+                <div class="summary__big">143</div>
+                <div class="summary__sub">Sets</div>
+              </div>
+            </div>
+
+            <div class="chart chart--bars" aria-label="Weekly volume bar chart" role="img">
+              <svg viewBox="0 0 560 220" width="100%" height="220" aria-hidden="true">
+                <defs>
+                  <linearGradient id="barGrad" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0" stop-color="rgba(120, 176, 255, 0.95)" />
+                    <stop offset="1" stop-color="rgba(120, 176, 255, 0.22)" />
+                  </linearGradient>
+                  <linearGradient id="barStroke" x1="0" x2="1">
+                    <stop offset="0" stop-color="rgba(120, 176, 255, 0.85)" />
+                    <stop offset="1" stop-color="rgba(120, 255, 222, 0.35)" />
+                  </linearGradient>
+                  <filter id="softGlow" x="-20%" y="-40%" width="140%" height="180%">
+                    <feGaussianBlur stdDeviation="6" result="b" />
+                    <feColorMatrix
+                      in="b"
+                      type="matrix"
+                      values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.55 0"
+                      result="g"
+                    />
+                    <feMerge>
+                      <feMergeNode in="g" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <g opacity="0.22">
+                  <path d="M40 30H520" stroke="rgba(255,255,255,0.10)" />
+                  <path d="M40 80H520" stroke="rgba(255,255,255,0.08)" />
+                  <path d="M40 130H520" stroke="rgba(255,255,255,0.06)" />
+                  <path d="M40 180H520" stroke="rgba(255,255,255,0.05)" />
+                </g>
+
+                <g filter="url(#softGlow)">
+                  <rect x="62" y="118" width="36" height="82" rx="10" fill="url(#barGrad)" stroke="url(#barStroke)" />
+                  <rect x="118" y="92" width="36" height="108" rx="10" fill="url(#barGrad)" stroke="url(#barStroke)" />
+                  <rect x="174" y="122" width="36" height="78" rx="10" fill="url(#barGrad)" stroke="url(#barStroke)" />
+                  <rect x="230" y="62" width="36" height="138" rx="10" fill="url(#barGrad)" stroke="url(#barStroke)" />
+                  <rect x="286" y="44" width="36" height="156" rx="10" fill="url(#barGrad)" stroke="url(#barStroke)" />
+                  <rect x="342" y="72" width="36" height="128" rx="10" fill="url(#barGrad)" stroke="url(#barStroke)" />
+                  <rect x="398" y="86" width="36" height="114" rx="10" fill="url(#barGrad)" stroke="url(#barStroke)" />
+                  <rect x="454" y="104" width="36" height="96" rx="10" fill="url(#barGrad)" stroke="url(#barStroke)" />
+                </g>
+              </svg>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="features">
+        <div class="container">
+          <div class="section__head">
+            <h2 class="h2">Precision Features</h2>
+            <p class="muted">Everything you need to track consistently and improve—without the clutter.</p>
+          </div>
+
+          <div class="features">
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M6.5 12.5 10 16l7.5-8.5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3 class="h3">Workout Plans</h3>
+              <p class="muted">Templates that adapt to your training style and goals.</p>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M4 17V7m5 10V5m5 12V9m5 8v-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <h3 class="h3">Session Logging</h3>
+              <p class="muted">Log sets fast with smart defaults and timers.</p>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 6v6l4 2"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                </svg>
+              </div>
+              <h3 class="h3">Auto Tracking</h3>
+              <p class="muted">Rest timers and history-based suggestions that keep you moving.</p>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 3v18m9-9H3"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <h3 class="h3">Progress Metrics</h3>
+              <p class="muted">PRs, volume, and trends in a clean dashboard.</p>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M8 12h8M8 16h5M8 8h10"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8l-4 2V6a2 2 0 0 1 2-2Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3 class="h3">Quick Notes</h3>
+              <p class="muted">Capture cues and tweaks so every session improves.</p>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M20 7 10 17l-5-5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3 class="h3">Goal Tracking</h3>
+              <p class="muted">Set targets and keep a streak with friendly nudges.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="how">
+        <div class="container">
+          <div class="section__head">
+            <h2 class="h2">How It Works</h2>
+          </div>
+
+          <div class="steps">
+            <article class="step card">
+              <div class="step__top">
+                <span class="step__bubble">1</span>
+                <span class="step__tag">Create plan</span>
+              </div>
+              <h3 class="h3">Pick a routine</h3>
+              <p class="muted">Choose a template or build your own in minutes.</p>
+            </article>
+
+            <article class="step card">
+              <div class="step__top">
+                <span class="step__bubble">2</span>
+                <span class="step__tag">Log sets</span>
+              </div>
+              <h3 class="h3">Train and record</h3>
+              <p class="muted">Fast set entry with history-based suggestions.</p>
+            </article>
+
+            <article class="step card">
+              <div class="step__top">
+                <span class="step__bubble">3</span>
+                <span class="step__tag">Insights</span>
+              </div>
+              <h3 class="h3">See progress</h3>
+              <p class="muted">Clean charts show trends across weeks and blocks.</p>
+            </article>
+
+            <article class="step card">
+              <div class="step__top">
+                <span class="step__bubble">4</span>
+                <span class="step__tag">Improve</span>
+              </div>
+              <h3 class="h3">Adjust smartly</h3>
+              <p class="muted">Tweak load, volume, and rest—without guesswork.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="visual card">
+            <div class="visual__left">
+              <h2 class="h2">Your Progress,<br />Visualized</h2>
+              <p class="muted">
+                A dashboard that answers the only question that matters: “Am I getting stronger?” Track volume, PRs, and
+                weekly consistency.
+              </p>
+
+              <div class="mini">
+                <div class="mini__row">
+                  <span class="mini__label">Training consistency</span>
+                  <span class="mini__value" data-consistency>88%</span>
+                </div>
+                <div class="progress">
+                  <span class="progress__bar" style="--p: 0.88"></span>
+                </div>
+                <div class="mini__grid">
+                  <div class="mini__stat">
+                    <div class="mini__k">PRs</div>
+                    <div class="mini__v">+12</div>
+                  </div>
+                  <div class="mini__stat">
+                    <div class="mini__k">Volume</div>
+                    <div class="mini__v">+18%</div>
+                  </div>
+                  <div class="mini__stat">
+                    <div class="mini__k">Avg RPE</div>
+                    <div class="mini__v">7.4</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="visual__right">
+              <div class="visual__card card">
+                <div class="card__header card__header--tight">
+                  <div>
+                    <div class="card__kicker">Last 8 weeks</div>
+                    <div class="card__title">Weekly volume</div>
+                  </div>
+                  <span class="chip">+18%</span>
+                </div>
+
+                <div class="chart chart--line" role="img" aria-label="Volume trend line chart">
+                  <svg viewBox="0 0 560 240" width="100%" height="240" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="lineGrad" x1="0" x2="1">
+                        <stop offset="0" stop-color="rgba(120,176,255,0.95)" />
+                        <stop offset="1" stop-color="rgba(120,255,222,0.55)" />
+                      </linearGradient>
+                      <linearGradient id="areaGrad" x1="0" x2="0" y1="0" y2="1">
+                        <stop offset="0" stop-color="rgba(120,176,255,0.30)" />
+                        <stop offset="1" stop-color="rgba(120,176,255,0.02)" />
+                      </linearGradient>
+                    </defs>
+
+                    <g opacity="0.22">
+                      <path d="M40 30H520" stroke="rgba(255,255,255,0.10)" />
+                      <path d="M40 80H520" stroke="rgba(255,255,255,0.08)" />
+                      <path d="M40 130H520" stroke="rgba(255,255,255,0.06)" />
+                      <path d="M40 180H520" stroke="rgba(255,255,255,0.05)" />
+                    </g>
+
+                    <path
+                      d="M40 195 C 88 170, 108 170, 160 156 C 212 142, 230 140, 280 120 C 330 100, 350 88, 400 92 C 450 96, 468 86, 520 62 L 520 210 L 40 210 Z"
+                      fill="url(#areaGrad)"
+                    />
+                    <path
+                      d="M40 195 C 88 170, 108 170, 160 156 C 212 142, 230 140, 280 120 C 330 100, 350 88, 400 92 C 450 96, 468 86, 520 62"
+                      fill="none"
+                      stroke="url(#lineGrad)"
+                      stroke-width="4"
+                      stroke-linecap="round"
+                    />
+
+                    <g fill="rgba(120,176,255,0.95)">
+                      <circle cx="40" cy="195" r="4.5" />
+                      <circle cx="160" cy="156" r="4.5" />
+                      <circle cx="280" cy="120" r="4.5" />
+                      <circle cx="400" cy="92" r="4.5" />
+                      <circle cx="520" cy="62" r="4.5" />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container split">
+          <div class="split__media">
+            <div class="photo photo--gym" aria-hidden="true"></div>
+            <div class="photo photo--athlete" aria-hidden="true"></div>
+          </div>
+          <div class="split__copy">
+            <h2 class="h2">
+              Ditch the Notebook.<br />
+              <span class="accent">Level Up</span> Your Training.
+            </h2>
+            <ul class="list">
+              <li class="list__item">
+                <span class="list__dot" aria-hidden="true"></span>
+                Build sessions faster with reusable templates.
+              </li>
+              <li class="list__item">
+                <span class="list__dot" aria-hidden="true"></span>
+                Spot plateaus early with clean trends.
+              </li>
+              <li class="list__item">
+                <span class="list__dot" aria-hidden="true"></span>
+                Keep motivation high with streaks and milestones.
+              </li>
+            </ul>
+            <div class="split__cta">
+              <a class="btn btn--primary btn--lg" href="#pricing">Start free</a>
+              <a class="btn btn--ghost btn--lg" href="#features">Explore features</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="testimonials">
+        <div class="container">
+          <div class="section__head">
+            <h2 class="h2">What Our Athletes Say</h2>
+          </div>
+
+          <div class="testimonials">
+            <article class="quote card">
+              <div class="quote__top">
+                <div class="avatar" aria-hidden="true">A</div>
+                <div>
+                  <div class="quote__name">Alex</div>
+                  <div class="quote__meta muted">Powerlifting</div>
+                </div>
+              </div>
+              <p class="quote__text">
+                “The weekly summary is addictive. I stopped guessing and started progressing.”
+              </p>
+              <div class="stars" aria-hidden="true">
+                <span>★ ★ ★ ★ ★</span>
+              </div>
+            </article>
+
+            <article class="quote card">
+              <div class="quote__top">
+                <div class="avatar avatar--b" aria-hidden="true">S</div>
+                <div>
+                  <div class="quote__name">Sam</div>
+                  <div class="quote__meta muted">Cross training</div>
+                </div>
+              </div>
+              <p class="quote__text">
+                “Logging sets is fast on mobile and the charts are actually readable.”
+              </p>
+              <div class="stars" aria-hidden="true">
+                <span>★ ★ ★ ★ ★</span>
+              </div>
+            </article>
+
+            <article class="quote card">
+              <div class="quote__top">
+                <div class="avatar avatar--c" aria-hidden="true">M</div>
+                <div>
+                  <div class="quote__name">Mina</div>
+                  <div class="quote__meta muted">Hypertrophy</div>
+                </div>
+              </div>
+              <p class="quote__text">
+                “Clean design, no clutter. It feels like a premium app from day one.”
+              </p>
+              <div class="stars" aria-hidden="true">
+                <span>★ ★ ★ ★ ★</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="pricing">
+        <div class="container">
+          <div class="cta card">
+            <h2 class="h2">Start Tracking Your Fitness<br />Journey Today</h2>
+            <p class="muted">Try it free. Cancel anytime. No credit card required.</p>
+            <div class="cta__actions">
+              <a class="btn btn--primary btn--lg" href="#start">Get started</a>
+              <a class="btn btn--ghost btn--lg" href="#demo">See pricing</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__grid">
+        <div class="footer__brand">
+          <a class="brand" href="#">
+            <span class="brand__dot" aria-hidden="true"></span>
+            <span class="brand__name">FitTrack</span>
+          </a>
+          <p class="muted">
+            A modern workout log to help you train with intention and track results.
+          </p>
+        </div>
+
+        <div class="footer__cols">
+          <div class="footer__col">
+            <div class="footer__title">Company</div>
+            <a class="footer__link" href="#">About</a>
+            <a class="footer__link" href="#">Careers</a>
+            <a class="footer__link" href="#">Blog</a>
+          </div>
+          <div class="footer__col">
+            <div class="footer__title">Product</div>
+            <a class="footer__link" href="#features">Features</a>
+            <a class="footer__link" href="#how">How it works</a>
+            <a class="footer__link" href="#pricing">Pricing</a>
+          </div>
+          <div class="footer__col">
+            <div class="footer__title">Contact</div>
+            <a class="footer__link" href="#">Support</a>
+            <a class="footer__link" href="#">Email</a>
+            <a class="footer__link" href="#">Privacy</a>
+          </div>
+        </div>
+      </div>
+      <div class="container footer__bottom">
+        <span class="muted">© <span data-year></span> FitTrack. All rights reserved.</span>
+        <div class="footer__social">
+          <a class="social" href="#" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M20 7.5c-.6.3-1.2.4-1.9.5.7-.4 1.1-1 1.4-1.8-.6.4-1.3.7-2 .8a3 3 0 0 0-5.1 2c0 .2 0 .5.1.7A8.5 8.5 0 0 1 4.6 5.9a3 3 0 0 0 .9 4c-.5 0-1-.2-1.4-.4v.1c0 1.5 1.1 2.8 2.5 3.1-.4.1-.8.1-1.2.1-.2 0-.4 0-.6-.1.4 1.3 1.7 2.3 3.2 2.3A6 6 0 0 1 4 19.3a8.5 8.5 0 0 0 4.6 1.3c5.5 0 8.6-4.6 8.6-8.6v-.4c.6-.4 1.1-1 1.5-1.6Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a class="social" href="#" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M9 19c-4 1.5-4-2-5-2m10 4v-3c0-.9.3-1.7.8-2.3-2.7-.3-5.6-1.3-5.6-6a4.6 4.6 0 0 1 1.2-3.1 4.2 4.2 0 0 1 .1-3s1-.3 3.2 1.2a11 11 0 0 1 5.8 0C16.7 1.1 17.7 1.4 17.7 1.4a4.2 4.2 0 0 1 .1 3 4.6 4.6 0 0 1 1.2 3.1c0 4.7-2.9 5.7-5.6 6 .5.6.8 1.4.8 2.3v3"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a class="social" href="#" aria-label="Dribbble">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <path
+                d="M5 7.5c3.8 2.2 7.4 3.2 11.9 3.2"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+              <path
+                d="M7 19c1-3.7 2.9-7.2 6-12.4"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+              <path
+                d="M21 12c-4.2-1.1-7.9-.7-11.6 1.3"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <div class="mobilemenu" data-mobilemenu>
+      <div class="mobilemenu__panel card" role="dialog" aria-modal="true" aria-label="Mobile menu">
+        <div class="mobilemenu__top">
+          <span class="brand__name">Menu</span>
+          <button class="iconbtn" type="button" aria-label="Close menu" data-menu-close>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div class="mobilemenu__links">
+          <a class="mobilemenu__link" href="./index.html">Home</a>
+          <a class="mobilemenu__link" href="./how-it-works.html">How it works</a>
+          <a class="mobilemenu__link" href="./progress.html">Progress</a>
+          <a class="mobilemenu__link" href="./contact.html">Contact</a>
+        </div>
+        <div class="mobilemenu__actions">
+          <a class="btn btn--primary btn--lg" href="./register.html">Register</a>
+          <a class="btn btn--ghost btn--lg" href="./login.html">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
