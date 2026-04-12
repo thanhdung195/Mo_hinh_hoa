@@ -1,26 +1,67 @@
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-// Active nav link (works for both file:// and Express)
+// Active nav link (marketing + /app/* on Express)
 (() => {
-  const path = (location.pathname || "").toLowerCase();
-  const file = path.split("/").pop() || "index.html";
-  const normalized = file === "" || file === "/" ? "index.html" : file;
+  const raw = (location.pathname || "").toLowerCase();
+  const pathNorm = raw.replace(/\/+$/, "") || "/";
+  const segments = pathNorm === "/" ? [] : pathNorm.split("/").filter(Boolean);
+  let normalized = "index.html";
+  if (segments.length) {
+    if (segments[0] === "app") {
+      normalized = segments.length === 1 ? "app" : segments[segments.length - 1];
+    } else {
+      normalized = segments[segments.length - 1];
+    }
+  }
 
+  const routeKey = (href) => {
+    const h = (href || "").toLowerCase().replace(/^\.\//, "");
+    const p = h.replace(/\/+$/, "") || "/";
+    const segs = p === "/" ? [] : p.split("/").filter(Boolean);
+    if (!segs.length) return "index.html";
+    if (segs[0] === "app") return segs.length === 1 ? "app" : segs[segs.length - 1];
+    return segs[segs.length - 1];
+  };
+
+  const isHome = normalized === "index.html";
   const links = $$("a.nav__link, a.mobilemenu__link");
   links.forEach((a) => {
-    const href = (a.getAttribute("href") || "").toLowerCase();
-    const hrefFile = href.split("/").pop();
-    const isHome = normalized === "" || normalized === "/" || normalized === "index.html";
+    const href = a.getAttribute("href") || "";
+    const hrefKey = routeKey(href);
     const match =
-      (isHome && (href === "./index.html" || href === "index.html" || href === "./" || href === "/")) ||
-      (hrefFile && hrefFile === normalized);
+      (isHome &&
+        (hrefKey === "index.html" || href === "/" || href === "./" || href.toLowerCase().endsWith("/index.html"))) ||
+      hrefKey === normalized;
     if (match) a.classList.add("is-active");
   });
 
-  // Highlight login button in header actions
   const loginBtn = $$('a.btn[href]').find((a) => (a.getAttribute("href") || "").toLowerCase().endsWith("login.html"));
   if (loginBtn && normalized === "login.html") loginBtn.classList.add("is-active");
+  const regBtn = $$('a.btn[href]').find((a) => (a.getAttribute("href") || "").toLowerCase().endsWith("register.html"));
+  if (regBtn && normalized === "register.html") regBtn.classList.add("is-active");
+})();
+
+// Auth pages: show server redirect errors (?e=code)
+(() => {
+  const el = $("[data-auth-error]");
+  if (!el) return;
+  const params = new URLSearchParams(location.search);
+  const code = params.get("e") || params.get("error");
+  const messages = {
+    invalid: "Email không hợp lệ hoặc mật khẩu cần tối thiểu 6 ký tự.",
+    taken: "Email này đã được đăng ký.",
+    missing: "Vui lòng nhập đủ email và mật khẩu.",
+    auth: "Sai email hoặc mật khẩu."
+  };
+  if (code && messages[code]) {
+    el.hidden = false;
+    el.textContent = messages[code];
+    params.delete("e");
+    params.delete("error");
+    const q = params.toString();
+    history.replaceState(null, "", `${location.pathname}${q ? `?${q}` : ""}${location.hash}`);
+  }
 })();
 
 // Footer year
@@ -333,6 +374,10 @@ if (bar && val) {
   const volumeEl = $('[data-progress-volume]');
   const proteinEl = $('[data-progress-protein]');
   const tbody = $('[data-progress-exercise-body]');
+  const calMonthEl = $("[data-progress-cal-month]");
+  if (calMonthEl) {
+    calMonthEl.textContent = new Date().toLocaleDateString("vi-VN", { month: "long", year: "numeric" });
+  }
 
   const fmt = (n) => (Number.isFinite(n) ? n : 0);
 
@@ -383,14 +428,16 @@ if (bar && val) {
       const calories = weight > 0 ? Math.round(weight * 33) : 0;
       const protein = weight > 0 ? Math.round(weight * 1.8) : 0;
       const consistency = Math.min(100, Math.round((workoutsLast30 / 30) * 100));
-      const weightChange = 0;
 
       totalEl.textContent = String(total);
       caloriesEls.forEach((el) => {
         el.textContent = calories.toLocaleString();
       });
       if (consistencyEl) consistencyEl.textContent = `${consistency}%`;
-      if (weightChangeEl) weightChangeEl.textContent = `${weightChange.toFixed(1)} kg`;
+      if (weightChangeEl) {
+        weightChangeEl.textContent = "—";
+        weightChangeEl.title = "Demo: biến thiên cân cần lịch sử đo; hiện chỉ lưu một giá trị trên Profile.";
+      }
       currentWeightEls.forEach((el) => {
         el.textContent = fmt(weight).toFixed(1);
       });

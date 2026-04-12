@@ -57,11 +57,11 @@ app.post("/auth/register", async (req, res) => {
   const password = String(req.body?.password || "");
 
   if (!email || password.length < 6) {
-    return res.status(400).send("Invalid email or password (min 6 chars).");
+    return res.redirect("/register.html?e=invalid");
   }
 
   const exists = db.prepare("SELECT id FROM users WHERE email = ?").get(email);
-  if (exists) return res.status(409).send("Email already registered.");
+  if (exists) return res.redirect("/register.html?e=taken");
 
   const id = newId("usr_");
   const passwordHash = await hashPassword(password);
@@ -74,13 +74,13 @@ app.post("/auth/register", async (req, res) => {
 app.post("/auth/login", async (req, res) => {
   const email = normalizeEmail(req.body?.email);
   const password = String(req.body?.password || "");
-  if (!email || !password) return res.status(400).send("Missing credentials.");
+  if (!email || !password) return res.redirect("/login.html?e=missing");
 
   const user = db.prepare("SELECT id, password_hash FROM users WHERE email = ?").get(email);
-  if (!user) return res.status(401).send("Invalid email or password.");
+  if (!user) return res.redirect("/login.html?e=auth");
 
   const ok = await verifyPassword(password, user.password_hash);
-  if (!ok) return res.status(401).send("Invalid email or password.");
+  if (!ok) return res.redirect("/login.html?e=auth");
 
   req.session.userId = user.id;
   res.redirect("/app");
@@ -211,7 +211,7 @@ app.delete("/api/workouts/:id", requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
-// User area (placeholder UI until you send designs)
+// Logged-in app (demo)
 app.get("/app", requireAuth, (_req, res) => res.sendFile(path.join(__dirname, "user", "home.html")));
 app.get("/app/workouts", requireAuth, (_req, res) => res.sendFile(path.join(__dirname, "user", "workouts.html")));
 app.get("/app/progress", requireAuth, (_req, res) => res.sendFile(path.join(__dirname, "user", "progress.html")));

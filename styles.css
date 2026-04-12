@@ -542,6 +542,18 @@ button{font:inherit}
 .authCard__title{margin:0;font-size:24px;letter-spacing:-.03em}
 .authCard__sub{margin:6px 0 0;color:rgba(255,255,255,.66);font-size:12.5px}
 
+.authError{
+  margin:0 0 2px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(255,96,96,.12);
+  border:1px solid rgba(255,140,140,.28);
+  color:rgba(255,210,210,.95);
+  font-size:13px;
+  line-height:1.35;
+}
+.authError[hidden]{display:none}
+
 .authForm{margin-top:14px;display:grid;gap:12px}
 .authField{display:grid;gap:8px}
 .authField__label{
