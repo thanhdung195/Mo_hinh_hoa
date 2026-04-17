@@ -58,37 +58,40 @@
       </div>
     </header>
 
-    <main class="appPage">
+    <main class="appPage workoutPage" data-workout-library>
       <div class="container">
-        <h1 class="appTitle">CREATE YOUR WORKOUT</h1>
-        <section class="board">
-          <form id="workout-form" class="profileRows">
-            <div class="profileRow">
-              <label class="profileRow__k" for="title">Plan Name</label>
-              <input class="field__input profileInput" id="title" name="title" type="text" placeholder="Monday Leg Day" required />
-            </div>
-            <div class="profileRow">
-              <label class="profileRow__k" for="performed_at">Workout Date</label>
-              <input class="field__input profileInput" id="performed_at" name="performed_at" type="date" required />
-            </div>
-            <div class="profileRow">
-              <label class="profileRow__k" for="notes">Notes</label>
-              <textarea class="field__input profileInput" id="notes" name="notes" rows="3" placeholder="Focus and notes"></textarea>
-            </div>
-            <div id="set-rows" class="profileRows"></div>
-            <div class="profileRows" style="grid-template-columns: 1fr 1fr; display: grid; gap: 10px">
-              <button class="btn btn--ghost" type="button" id="add-set-btn">+ Add Exercise</button>
-              <button class="btn btn--primary" type="submit">Save Workout</button>
-            </div>
-            <p class="muted" data-workout-message style="margin: 0"></p>
-          </form>
+        <section class="workoutLibrary" data-workout-list-view>
+          <div class="workoutLibrary__head">
+            <h1 class="workoutLibrary__title">Library</h1>
+            <span class="workoutLibrary__premium">Premium</span>
+          </div>
+          <div class="workoutFilters" role="group" aria-label="Workout filters">
+            <button class="workoutChip" type="button">Equipment (65)</button>
+            <button class="workoutChip" type="button">Muscles (16)</button>
+            <button class="workoutChip" type="button">45-60 min</button>
+          </div>
+          <h2 class="workoutLibrary__sub">1 Day a Week</h2>
+          <div class="workoutPlanList" data-workout-plan-list></div>
         </section>
 
-        <section class="board" style="margin-top: 14px">
-          <div class="board__colTitle"><span>YOUR</span> SAVED WORKOUTS</div>
-          <div id="workout-list" class="profileRows">
-            <p class="muted">No workouts yet. Create your first one above.</p>
+        <section class="workoutDetail" data-workout-detail-view hidden>
+          <div class="workoutDetail__top">
+            <button class="workoutBack" type="button" data-workout-back>←</button>
+            <div class="workoutDetail__planName" data-workout-plan-name>PLAN 1</div>
+            <span class="workoutLibrary__premium">Premium</span>
           </div>
+
+          <article class="workoutDetail__card">
+            <h2 class="workoutDetail__title" data-workout-title>Full Body</h2>
+            <div class="workoutMeta">
+              <span data-workout-total-exercises>0 Exercises</span>
+              <span data-workout-duration>0 Min</span>
+              <span data-workout-calories>0 Cal</span>
+            </div>
+            <div class="workoutExerciseList" data-workout-exercise-list></div>
+          </article>
+
+          <button class="btn btn--primary btn--lg workoutDetail__start" type="button">START THIS PLAN</button>
         </section>
       </div>
     </main>

@@ -1400,3 +1400,175 @@ button{font:inherit}
   .workoutSetRow{grid-template-columns:1fr}
 }
 
+/* Workout library page */
+.workoutPage{padding-top:20px}
+.workoutLibrary,.workoutDetail{
+  width:min(460px, 100%);
+  margin:0 auto;
+}
+.workoutLibrary__head,.workoutDetail__top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.workoutLibrary__title{
+  margin:0;
+  font-size:34px;
+  font-weight:1000;
+  letter-spacing:-.04em;
+}
+.workoutLibrary__premium{
+  color:#ffda23;
+  font-size:11px;
+  text-transform:uppercase;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.workoutFilters{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+  overflow-x:auto;
+  padding-bottom:4px;
+}
+.workoutChip{
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:999px;
+  padding:10px 14px;
+  background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.78);
+  font-weight:700;
+  white-space:nowrap;
+}
+.workoutLibrary__sub{
+  margin:18px 0 12px;
+  font-size:34px;
+  font-weight:1000;
+  letter-spacing:-.04em;
+}
+.workoutPlanList{
+  display:grid;
+  gap:12px;
+}
+.workoutPlanCard{
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:20px;
+  min-height:170px;
+  overflow:hidden;
+  background-size:cover;
+  background-position:center;
+  position:relative;
+  display:flex;
+  align-items:flex-end;
+  padding:14px;
+  cursor:pointer;
+}
+.workoutPlanCard::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.68));
+}
+.workoutPlanCard__content{
+  position:relative;
+  z-index:1;
+}
+.workoutPlanCard__title{
+  margin:0;
+  color:#8cff1d;
+  font-size:38px;
+  font-weight:1100;
+  letter-spacing:-.03em;
+  text-transform:uppercase;
+  line-height:.9;
+}
+.workoutPlanCard__sub{
+  margin-top:6px;
+  color:rgba(255,255,255,.90);
+  font-weight:800;
+}
+
+.workoutDetail__top{margin-bottom:12px}
+.workoutDetail__planName{
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.workoutBack{
+  width:36px;
+  height:36px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.04);
+  color:rgba(255,255,255,.88);
+  cursor:pointer;
+}
+.workoutDetail__card{
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:22px;
+  padding:16px;
+  background:rgba(10,14,24,.84);
+}
+.workoutDetail__title{
+  margin:0;
+  text-align:center;
+  font-size:32px;
+  font-weight:1000;
+  letter-spacing:-.03em;
+}
+.workoutMeta{
+  margin-top:10px;
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  color:rgba(255,255,255,.75);
+  font-weight:800;
+}
+.workoutExerciseList{
+  margin-top:16px;
+  display:grid;
+  gap:10px;
+}
+.workoutExercise{
+  display:grid;
+  grid-template-columns:74px 1fr;
+  gap:12px;
+  align-items:center;
+}
+.workoutExercise__gif{
+  width:74px;
+  height:74px;
+  border-radius:14px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.04);
+}
+.workoutExercise__name{
+  font-size:26px;
+  font-weight:900;
+  letter-spacing:-.03em;
+  margin:0;
+  line-height:1;
+}
+.workoutExercise__meta{
+  margin-top:4px;
+  color:rgba(255,255,255,.72);
+  font-weight:700;
+}
+.workoutDetail__start{
+  margin-top:14px;
+  width:100%;
+  justify-content:center;
+  min-height:56px;
+  font-size:30px;
+  font-weight:1000;
+  letter-spacing:-.02em;
+}
+
+@media (max-width: 560px){
+  .workoutLibrary__title,.workoutLibrary__sub,.workoutPlanCard__title,.workoutExercise__name,.workoutDetail__start,.workoutDetail__title{
+    font-size:clamp(28px, 8vw, 36px);
+  }
+}
+
