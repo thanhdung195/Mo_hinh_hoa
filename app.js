@@ -475,3 +475,183 @@ if (bar && val) {
     .catch(() => {});
 })();
 
+// Workout library page: list plans and show GIF exercise guide
+(() => {
+  const page = $('[data-workout-library]');
+  if (!page) return;
+
+  const listView = $('[data-workout-list-view]', page);
+  const detailView = $('[data-workout-detail-view]', page);
+  const planListEl = $('[data-workout-plan-list]', page);
+  const backBtn = $('[data-workout-back]', page);
+  const planNameEl = $('[data-workout-plan-name]', page);
+  const titleEl = $('[data-workout-title]', page);
+  const totalExerciseEl = $('[data-workout-total-exercises]', page);
+  const durationEl = $('[data-workout-duration]', page);
+  const caloriesEl = $('[data-workout-calories]', page);
+  const exerciseListEl = $('[data-workout-exercise-list]', page);
+  if (!listView || !detailView || !planListEl || !exerciseListEl) return;
+
+  const plans = [
+    {
+      id: "plan_1",
+      planName: "PLAN 1",
+      title: "GET IN SHAPE",
+      subtitle: "Full Body Split",
+      duration: 58,
+      calories: 246,
+      cover:
+        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1400&q=70",
+      exercises: [
+        {
+          name: "Barbell Back Squat",
+          sets: "4 sets x 6-8 reps",
+          gif: "https://media.giphy.com/media/3o7TKMt1VVNkHV2PaE/giphy.gif"
+        },
+        {
+          name: "Barbell Bench Press",
+          sets: "3 sets x 6-8 reps",
+          gif: "https://media.giphy.com/media/l0Exh5setxQl10lUI/giphy.gif"
+        },
+        {
+          name: "Seated DB Overhead Press",
+          sets: "4 sets x 10-12 reps",
+          gif: "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"
+        },
+        {
+          name: "Overhand Grip Lat Pulldown",
+          sets: "4 sets x 8-10 reps",
+          gif: "https://media.giphy.com/media/xT9IgzoKnwFNmISR8I/giphy.gif"
+        },
+        {
+          name: "Roman Chair Back Extension",
+          sets: "4 sets x 8-10 reps",
+          gif: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+        },
+        {
+          name: "Hack Squat",
+          sets: "4 sets x 10-12 reps",
+          gif: "https://media.giphy.com/media/Ju7l5y9osyymQ/giphy.gif"
+        }
+      ]
+    },
+    {
+      id: "plan_2",
+      planName: "PLAN 2",
+      title: "GET LEAN",
+      subtitle: "Full Body Split",
+      duration: 52,
+      calories: 221,
+      cover:
+        "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=1400&q=70",
+      exercises: [
+        {
+          name: "Incline DB Press",
+          sets: "4 sets x 8-10 reps",
+          gif: "https://media.giphy.com/media/l41lVsYDBC0UVQJCE/giphy.gif"
+        },
+        {
+          name: "Walking Lunge",
+          sets: "3 sets x 12-14 reps",
+          gif: "https://media.giphy.com/media/26tPplGWjN0xLybiU/giphy.gif"
+        },
+        {
+          name: "Cable Row",
+          sets: "4 sets x 10-12 reps",
+          gif: "https://media.giphy.com/media/l4FGjNNQYCrC7ZvoI/giphy.gif"
+        },
+        {
+          name: "Mountain Climber",
+          sets: "3 sets x 40 sec",
+          gif: "https://media.giphy.com/media/l3vR4n3mPNJn37vb2/giphy.gif"
+        }
+      ]
+    },
+    {
+      id: "plan_3",
+      planName: "PLAN 3",
+      title: "BUILD POWER",
+      subtitle: "Upper + Lower",
+      duration: 64,
+      calories: 302,
+      cover:
+        "https://images.unsplash.com/photo-1534367610401-9f5ed68180aa?auto=format&fit=crop&w=1400&q=70",
+      exercises: [
+        {
+          name: "Deadlift",
+          sets: "5 sets x 3-5 reps",
+          gif: "https://media.giphy.com/media/xT9IgAakXAITtXIWje/giphy.gif"
+        },
+        {
+          name: "Push Press",
+          sets: "4 sets x 5 reps",
+          gif: "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"
+        },
+        {
+          name: "Weighted Pull Up",
+          sets: "4 sets x 6 reps",
+          gif: "https://media.giphy.com/media/l0HU20BZ6LbSEITza/giphy.gif"
+        },
+        {
+          name: "Front Squat",
+          sets: "4 sets x 6 reps",
+          gif: "https://media.giphy.com/media/3ohs4w2Qf8J5tNn4pW/giphy.gif"
+        }
+      ]
+    }
+  ];
+
+  const renderPlans = () => {
+    planListEl.innerHTML = plans
+      .map(
+        (p) => `
+          <button class="workoutPlanCard" type="button" data-plan-id="${p.id}" style="background-image:url('${p.cover}')">
+            <div class="workoutPlanCard__content">
+              <h3 class="workoutPlanCard__title">${p.title}</h3>
+              <div class="workoutPlanCard__sub">${p.subtitle}</div>
+            </div>
+          </button>
+        `
+      )
+      .join("");
+  };
+
+  const openDetail = (plan) => {
+    if (!plan) return;
+    listView.hidden = true;
+    detailView.hidden = false;
+    planNameEl.textContent = plan.planName;
+    titleEl.textContent = plan.subtitle;
+    totalExerciseEl.textContent = `${plan.exercises.length} Exercises`;
+    durationEl.textContent = `${plan.duration} Min`;
+    caloriesEl.textContent = `${plan.calories} Cal`;
+    exerciseListEl.innerHTML = plan.exercises
+      .map(
+        (ex) => `
+          <article class="workoutExercise">
+            <img class="workoutExercise__gif" src="${ex.gif}" alt="${ex.name} GIF demo" loading="lazy" />
+            <div>
+              <h3 class="workoutExercise__name">${ex.name}</h3>
+              <div class="workoutExercise__meta">${ex.sets}</div>
+            </div>
+          </article>
+        `
+      )
+      .join("");
+  };
+
+  const closeDetail = () => {
+    detailView.hidden = true;
+    listView.hidden = false;
+  };
+
+  renderPlans();
+  planListEl.addEventListener("click", (e) => {
+    const card = e.target.closest("[data-plan-id]");
+    if (!card) return;
+    const selected = plans.find((p) => p.id === card.getAttribute("data-plan-id"));
+    openDetail(selected);
+  });
+  backBtn?.addEventListener("click", closeDetail);
+})();
+
