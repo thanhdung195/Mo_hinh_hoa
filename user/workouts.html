@@ -60,28 +60,29 @@
 
     <main class="appPage workoutPage" data-workout-library>
       <div class="container">
-        <section class="workoutLibrary" data-workout-list-view>
+        <section class="workoutLibrary card" data-workout-list-view>
           <div class="workoutLibrary__head">
             <h1 class="workoutLibrary__title">Library</h1>
             <span class="workoutLibrary__premium">Premium</span>
           </div>
+          <p class="muted workoutLibrary__desc">Choose a guided plan and learn each movement with GIF instructions.</p>
           <div class="workoutFilters" role="group" aria-label="Workout filters">
-            <button class="workoutChip" type="button">Equipment (65)</button>
+            <button class="workoutChip is-active" type="button">Equipment (65)</button>
             <button class="workoutChip" type="button">Muscles (16)</button>
             <button class="workoutChip" type="button">45-60 min</button>
           </div>
-          <h2 class="workoutLibrary__sub">1 Day a Week</h2>
+          <h2 class="workoutLibrary__sub">Plans for this week</h2>
           <div class="workoutPlanList" data-workout-plan-list></div>
         </section>
 
-        <section class="workoutDetail" data-workout-detail-view hidden>
+        <section class="workoutDetail card" data-workout-detail-view hidden>
           <div class="workoutDetail__top">
             <button class="workoutBack" type="button" data-workout-back>←</button>
             <div class="workoutDetail__planName" data-workout-plan-name>PLAN 1</div>
             <span class="workoutLibrary__premium">Premium</span>
           </div>
 
-          <article class="workoutDetail__card">
+          <article class="workoutDetail__card card">
             <h2 class="workoutDetail__title" data-workout-title>Full Body Split</h2>
             <div class="workoutMeta">
               <span data-workout-total-exercises>0 Exercises</span>
