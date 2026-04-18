@@ -18,6 +18,7 @@ function fittrackNormalizeWeightEntry(e) {
     const w = Number(e.weight);
     let t = e.t;
     if (!Number.isFinite(t)) t = new Date(`${String(e.date)}T12:00:00`).getTime();
+    if (!Number.isFinite(t) || Number.isNaN(t)) t = Date.now();
     return { date: String(e.date), weight: w, t };
   }
   if (Number.isFinite(Number(e.kg))) {
@@ -25,16 +26,20 @@ function fittrackNormalizeWeightEntry(e) {
     const d = String(e.d || "");
     let t = e.t;
     if (!Number.isFinite(t) && d) t = new Date(`${d}T12:00:00`).getTime();
-    if (!Number.isFinite(t)) t = Date.now();
+    if (!Number.isFinite(t) || Number.isNaN(t)) t = Date.now();
     return { date: d || fittrackIsoDate(t), weight: w, t };
   }
   return null;
 }
 
 function fittrackPointTime(p) {
-  if (p && Number.isFinite(p.t)) return Number(p.t);
-  if (p && p.date) return new Date(`${String(p.date)}T12:00:00`).getTime();
-  return 0;
+  if (!p) return Date.now();
+  if (Number.isFinite(p.t) && p.t > 0) return Number(p.t);
+  if (p.date) {
+    const ms = new Date(`${String(p.date)}T12:00:00`).getTime();
+    if (Number.isFinite(ms) && !Number.isNaN(ms)) return ms;
+  }
+  return Date.now();
 }
 
 /**
@@ -59,6 +64,65 @@ function fittrackAppendWeightSnapshot(profileKg) {
   } catch {
     /* ignore */
   }
+}
+
+const FITTRACK_PLAN_START_DAYS_KEY = "fittrack_plan_start_days_v1";
+
+function fittrackLocalISODate(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function fittrackAddCalendarDays(isoYYYYMMDD, deltaDays) {
+  const parts = String(isoYYYYMMDD).split("-");
+  const y = parseInt(parts[0], 10);
+  const mo = parseInt(parts[1], 10);
+  const da = parseInt(parts[2], 10);
+  if (!Number.isFinite(y) || !Number.isFinite(mo) || !Number.isFinite(da)) return fittrackLocalISODate();
+  const dt = new Date(y, mo - 1, da + deltaDays);
+  return fittrackLocalISODate(dt);
+}
+
+/** ISO dates (YYYY-MM-DD) when the user tapped “Start this plan” for a workout session. */
+function fittrackLoadPlanStartDays() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(FITTRACK_PLAN_START_DAYS_KEY) || "[]");
+    if (!Array.isArray(arr)) return [];
+    return [...new Set(arr.map((x) => String(x).slice(0, 10)).filter(Boolean))].sort();
+  } catch {
+    return [];
+  }
+}
+
+function fittrackRecordPlanSessionDay() {
+  const key = fittrackLocalISODate();
+  const set = new Set(fittrackLoadPlanStartDays());
+  set.add(key);
+  const sorted = [...set].sort();
+  localStorage.setItem(FITTRACK_PLAN_START_DAYS_KEY, JSON.stringify(sorted.slice(-400)));
+}
+
+/**
+ * Consecutive calendar days with a plan session, counting back from today or yesterday
+ * (one-day grace if you have not started yet today).
+ */
+function fittrackComputePlanStreak(dayList) {
+  const set = new Set(dayList);
+  const today = fittrackLocalISODate();
+  let start = today;
+  if (!set.has(start)) {
+    start = fittrackAddCalendarDays(today, -1);
+    if (!set.has(start)) return 0;
+  }
+  let streak = 0;
+  let d = start;
+  while (set.has(d)) {
+    streak += 1;
+    d = fittrackAddCalendarDays(d, -1);
+  }
+  return streak;
 }
 
 // Active nav link (marketing + /app/* on Express)
@@ -269,7 +333,7 @@ if (bar && val) {
       setValue('bmi', p.bmi);
       setValue('active_streak', p.active_streak);
       if (totalWorkoutsEl) totalWorkoutsEl.textContent = String(p.total_workouts || 0);
-      if (activeStreakEl) activeStreakEl.textContent = String(p.active_streak || 0);
+      if (activeStreakEl) activeStreakEl.textContent = String(fittrackComputePlanStreak(fittrackLoadPlanStartDays()));
       updateDerivedProfileMetrics();
     })
     .catch(() => {});
@@ -302,7 +366,7 @@ if (bar && val) {
       if (Number.isFinite(savedKg) && savedKg > 0) {
         fittrackAppendWeightSnapshot(savedKg);
       }
-      if (activeStreakEl) activeStreakEl.textContent = String(p?.active_streak || 0);
+      if (activeStreakEl) activeStreakEl.textContent = String(fittrackComputePlanStreak(fittrackLoadPlanStartDays()));
       if (msg) msg.textContent = 'Saved successfully.';
     } catch {
       if (msg) msg.textContent = 'Cannot save profile. Please try again.';
@@ -439,9 +503,30 @@ if (bar && val) {
   const proteinEl = $('[data-progress-protein]');
   const tbody = $('[data-progress-exercise-body]');
   const calMonthEl = $("[data-progress-cal-month]");
+  const calGridEl = $("[data-progress-cal-grid]");
   if (calMonthEl) {
     calMonthEl.textContent = new Date().toLocaleDateString("vi-VN", { month: "long", year: "numeric" });
   }
+
+  const renderProgressPlanCalendar = () => {
+    if (!calGridEl) return;
+    const planDays = new Set(fittrackLoadPlanStartDays());
+    const now = new Date();
+    const y = now.getFullYear();
+    const mo = now.getMonth();
+    const lastDom = new Date(y, mo + 1, 0).getDate();
+    calGridEl.innerHTML = "";
+    for (let dom = 1; dom <= lastDom; dom += 1) {
+      const iso = `${y}-${String(mo + 1).padStart(2, "0")}-${String(dom).padStart(2, "0")}`;
+      const cell = document.createElement("div");
+      const on = planDays.has(iso);
+      cell.className = on ? "calCell is-on is-plan-day" : "calCell is-rest-day";
+      cell.textContent = String(dom);
+      cell.title = on ? "Đã bắt đầu plan (Start this plan)" : "Chưa bắt đầu plan";
+      calGridEl.appendChild(cell);
+    }
+  };
+  renderProgressPlanCalendar();
 
   const chartSvg = $("[data-weight-chart-svg]");
 
@@ -466,9 +551,8 @@ if (bar && val) {
 
   /**
    * Weight line chart data: chronological points from first logged weigh-in to latest.
-   * X-axis maps each point’s time (`t` / `date`); Y-axis is `weight` (kg).
-   * `displayPoints[0]` is always the user’s initial weight (oldest log entry).
-   * `linePoints` connects every point in order, plus an optional flat tail to “now”.
+   * Rendering uses even X-spacing by weigh-in index (not raw timestamps) so recent edits do not clump on the right.
+   * Y-axis is `weight` (kg). `displayPoints[0]` is the oldest log entry; `linePoints` adds an optional flat tail to “now”.
    */
   const buildDisplayPoints = (log, profileKg) => {
     const sorted = [...log].sort((a, b) => fittrackPointTime(a) - fittrackPointTime(b));
@@ -487,6 +571,27 @@ if (bar && val) {
     }
 
     const displayPoints = [...sorted];
+
+    // One real weigh-in: without a padded time domain + tail point, X-scale collapses and
+    // smoothLineD() gets stacked/degenerate samples (broken or tiny chart).
+    if (displayPoints.length === 1) {
+      const p0 = displayPoints[0];
+      let t0 = fittrackPointTime(p0);
+      if (!Number.isFinite(t0) || t0 <= 0) t0 = tNow;
+      let tMin = t0 - MS_DAY;
+      let tMax = Math.max(tNow, t0 + MS_DAY);
+      if (tMax <= tMin) tMax = tMin + MS_DAY;
+      const linePoints = [
+        p0,
+        {
+          date: fittrackIsoDate(tMax),
+          weight: p0.weight,
+          t: tMax,
+          _virtual: true
+        }
+      ];
+      return { displayPoints, linePoints, tMin, tMax };
+    }
 
     let tMin = fittrackPointTime(displayPoints[0]);
     let tMax = Math.max(tNow, fittrackPointTime(displayPoints[displayPoints.length - 1]));
@@ -507,43 +612,61 @@ if (bar && val) {
     return { displayPoints, linePoints, tMin, tMax };
   };
 
-  const buildDenseSmoothPolyline = (linePoints, tMin, tMax, plotL, plotR, yFromKg) => {
+  /** Evenly space each line point on X (1st weigh-in → last). Avoids clumping when real times are seconds apart but the span from first entry to “now” is months. */
+  const linePointXs = (linePoints, plotL, plotR) => {
+    const n = linePoints.length;
+    if (n === 0) return [];
+    if (n === 1) return [(plotL + plotR) / 2];
+    return linePoints.map((_, i) => plotL + (i / (n - 1)) * (plotR - plotL));
+  };
+
+  const buildDenseSmoothPolyline = (linePoints, plotL, plotR, yFromKg) => {
     if (!linePoints.length) return [];
-    const span = Math.max(1, tMax - tMin);
+    const xs = linePointXs(linePoints, plotL, plotR);
     const xy = [];
     for (let i = 0; i < linePoints.length - 1; i += 1) {
       const a = linePoints[i];
       const b = linePoints[i + 1];
-      const ta = fittrackPointTime(a);
-      const tb = fittrackPointTime(b);
+      const xa = xs[i];
+      const xb = xs[i + 1];
       for (let s = 0; s < POINTS_PER_SEGMENT; s += 1) {
         const u = s / POINTS_PER_SEGMENT;
-        const t = ta + u * (tb - ta);
+        const x = xa + u * (xb - xa);
         const w = a.weight + u * (b.weight - a.weight);
-        const ux = (t - tMin) / span;
-        xy.push({ x: plotL + Math.max(0, Math.min(1, ux)) * (plotR - plotL), y: yFromKg(w) });
+        xy.push({ x, y: yFromKg(w) });
       }
     }
     const L = linePoints[linePoints.length - 1];
-    const uu = (fittrackPointTime(L) - tMin) / span;
-    xy.push({
-      x: plotL + Math.max(0, Math.min(1, uu)) * (plotR - plotL),
-      y: yFromKg(L.weight)
-    });
+    xy.push({ x: xs[linePoints.length - 1], y: yFromKg(L.weight) });
     return xy;
   };
 
   const smoothLineD = (points) => {
     if (points.length < 2) return "";
-    let d = `M ${points[0].x} ${points[0].y}`;
-    for (let i = 0; i < points.length - 1; i += 1) {
-      const p0 = points[i];
-      const p1 = points[i + 1];
-      const c1x = p0.x + (p1.x - p0.x) / 3;
-      const c1y = p0.y;
-      const c2x = p0.x + (2 * (p1.x - p0.x)) / 3;
-      const c2y = p1.y;
-      d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p1.x} ${p1.y}`;
+    const deduped = [];
+    for (let i = 0; i < points.length; i += 1) {
+      const cur = points[i];
+      if (!Number.isFinite(cur.x) || !Number.isFinite(cur.y)) continue;
+      const prev = deduped[deduped.length - 1];
+      if (prev && Math.abs(prev.x - cur.x) < 0.01 && Math.abs(prev.y - cur.y) < 0.01) continue;
+      deduped.push(cur);
+    }
+    if (deduped.length < 2) return "";
+    let d = `M ${deduped[0].x} ${deduped[0].y}`;
+    for (let i = 0; i < deduped.length - 1; i += 1) {
+      const p0 = deduped[i];
+      const p1 = deduped[i + 1];
+      const dx = p1.x - p0.x;
+      // Near-vertical runs: cubic with horizontal handles becomes unstable; use linear segments.
+      if (Math.abs(dx) < 0.75) {
+        d += ` L ${p1.x} ${p1.y}`;
+      } else {
+        const c1x = p0.x + dx / 3;
+        const c1y = p0.y;
+        const c2x = p0.x + (2 * dx) / 3;
+        const c2y = p1.y;
+        d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p1.x} ${p1.y}`;
+      }
     }
     return d;
   };
@@ -559,21 +682,19 @@ if (bar && val) {
     return Number.isInteger(n) ? String(Math.round(n)) : n.toFixed(1);
   };
 
-  const drawWeightMilestoneLabels = (svg, displayPoints, tMin, tMax, yFromKg, xl, xr) => {
+  const drawWeightMilestoneLabels = (svg, displayPoints, linePoints, yFromKg, xl, xr) => {
     const g = svg.querySelector("[data-weight-chart-labels]");
-    if (!g || !displayPoints.length) return;
+    if (!g || !displayPoints.length || !linePoints.length) return;
     g.innerHTML = "";
     const NS = "http://www.w3.org/2000/svg";
-    const span = Math.max(1, tMax - tMin);
+    const xs = linePointXs(linePoints, xl, xr);
     const MIN_LABEL_X = 42;
     let lastLabelX = -1e9;
     let lastLabelStr = "";
     const n = displayPoints.length;
     displayPoints.forEach((p, idx) => {
       if (p._virtual) return;
-      const tMs = fittrackPointTime(p);
-      const u = (tMs - tMin) / span;
-      const x = xl + Math.max(0, Math.min(1, u)) * (xr - xl);
+      const x = xs[idx] ?? xl;
       const y = yFromKg(p.weight);
       const labelStr = formatWeightPointLabel(p.weight);
       const isFirst = idx === 0;
@@ -659,7 +780,7 @@ if (bar && val) {
       return plotB - ((kg - kMin) / (kMax - kMin)) * (plotB - plotT);
     };
 
-    let xy = buildDenseSmoothPolyline(linePoints, tMin, tMax, plotL, plotR, yFromKg);
+    let xy = buildDenseSmoothPolyline(linePoints, plotL, plotR, yFromKg);
     if (xy.length < 2) {
       const p0 = xy[0] || { x: (plotL + plotR) / 2, y: yFromKg(linePoints[0].weight) };
       xy = [p0, { x: p0.x + 40, y: p0.y }];
@@ -668,7 +789,7 @@ if (bar && val) {
     line.setAttribute("d", lineD);
     area.setAttribute("d", `${lineD} L ${plotR} ${areaFloor} L ${plotL} ${areaFloor} Z`);
 
-    drawWeightMilestoneLabels(svg, displayPoints, tMin, tMax, yFromKg, plotL, plotR);
+    drawWeightMilestoneLabels(svg, displayPoints, linePoints, yFromKg, plotL, plotR);
 
     const lastReal = displayPoints[displayPoints.length - 1];
     const lastKg = lastReal.weight;
@@ -677,7 +798,7 @@ if (bar && val) {
       W0 > 0 && Number.isFinite(lastKg) ? ((lastKg - W0) / W0) * 100 : null;
     svg.setAttribute(
       "aria-label",
-      `Weight line chart: date on horizontal axis, kg on vertical axis; from ${W0.toFixed(
+      `Weight line chart: weigh-ins left to right in time order, kg on vertical axis; from ${W0.toFixed(
         1
       )} kg (first entry) to ${lastKg.toFixed(1)} kg.`
     );
@@ -778,7 +899,7 @@ if (bar && val) {
           weightChangeEl.title = "Nhập cân trên Profile để có mốc so sánh và biểu đồ.";
         }
       }
-      if (streakEl) streakEl.textContent = String(profile.active_streak || 0);
+      if (streakEl) streakEl.textContent = String(fittrackComputePlanStreak(fittrackLoadPlanStartDays()));
       if (prsEl) prsEl.textContent = `+${prs}`;
       if (volumeEl) volumeEl.textContent = Math.round(volume).toLocaleString();
       if (proteinEl) proteinEl.textContent = protein.toLocaleString();
@@ -1286,6 +1407,7 @@ if (bar && val) {
 
   const startActiveSession = () => {
     if (!currentPlan || !currentPlan.exercises.length) return;
+    fittrackRecordPlanSessionDay();
     stopTimer();
     session = {
       exerciseIndex: 0,

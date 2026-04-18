@@ -327,8 +327,19 @@ button{font:inherit}
 .calTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .calMonth{font-weight:900}
 .calGrid{margin-top:10px;display:grid;grid-template-columns:repeat(7, 1fr);gap:8px}
-.calCell{height:26px;border-radius:10px;display:grid;place-items:center;color:rgba(255,255,255,.52);font-size:12px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)}
-.calCell.is-on{background:rgba(78,162,255,.14);border-color:rgba(78,162,255,.24);color:rgba(255,255,255,.90)}
+.calCell{height:26px;border-radius:10px;display:grid;place-items:center;font-size:12px}
+.calCell.is-rest-day{
+  color:rgba(255,255,255,.34);
+  border:1px solid rgba(255,255,255,.04);
+  background:rgba(0,0,0,.22);
+}
+.calCell.is-on.is-plan-day{
+  color:#fff;
+  font-weight:800;
+  border:1px solid rgba(140,200,255,.65);
+  background:linear-gradient(180deg, rgba(78,162,255,.55) 0%, rgba(40,100,200,.38) 100%);
+  box-shadow:0 0 14px rgba(78,162,255,.28), inset 0 1px 0 rgba(255,255,255,.12);
+}
 
 .tableCard{margin-top:12px;padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03)}
 .tableHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
