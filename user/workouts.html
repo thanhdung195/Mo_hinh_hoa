@@ -73,6 +73,34 @@
           </div>
           <h2 class="workoutLibrary__sub">Plans for this week</h2>
           <div class="workoutPlanList" data-workout-plan-list></div>
+
+          <h2 class="workoutLibrary__sub workoutLibrary__sub--secondary">Lịch của bạn</h2>
+          <p class="workoutLibrary__lead muted">Tự tạo lịch với tên bài, số set, số rep và thời gian (phút) cho từng bài — hiển thị giống thư viện có sẵn.</p>
+          <div class="workoutPlanList" data-custom-plan-list></div>
+          <button class="btn btn--primary btn--lg workoutCreateBtn" type="button" data-open-workout-builder>
+            Tạo lịch mới
+          </button>
+        </section>
+
+        <section class="workoutBuilder" data-workout-builder-view hidden>
+          <div class="workoutDetail__top">
+            <button class="workoutBack" type="button" data-workout-builder-back>←</button>
+            <div class="workoutDetail__planName">TẠO LỊCH</div>
+            <span class="workoutLibrary__premium">Premium</span>
+          </div>
+          <article class="workoutDetail__card workoutBuilder__card">
+            <h2 class="workoutDetail__title workoutBuilder__title">Lịch tập của bạn</h2>
+            <div class="workoutBuilder__field field">
+              <label class="field__label" for="custom-plan-title">Tên lịch</label>
+              <input class="field__input profileInput" id="custom-plan-title" type="text" data-custom-plan-title placeholder="Ví dụ: Push Day" autocomplete="off" />
+            </div>
+            <div class="workoutBuilder__rows" data-custom-exercise-rows></div>
+            <button class="btn btn--ghost btn--lg workoutBuilder__addRow" type="button" data-add-exercise-row>+ Thêm bài tập</button>
+            <div class="workoutBuilder__summary muted" data-custom-plan-summary>Tổng thời gian ước lượng: 0 phút</div>
+            <div class="workoutBuilder__actions">
+              <button class="btn btn--primary btn--lg" type="button" data-save-custom-plan>Lưu và xem lịch</button>
+            </div>
+          </article>
         </section>
 
         <section class="workoutDetail card" data-workout-detail-view hidden>
@@ -92,7 +120,50 @@
             <div class="workoutExerciseList" data-workout-exercise-list></div>
           </article>
 
-          <button class="btn btn--primary btn--lg workoutDetail__start" type="button">START THIS PLAN</button>
+          <button class="btn btn--primary btn--lg workoutDetail__start" type="button" data-workout-start>START THIS PLAN</button>
+        </section>
+
+        <section class="workoutActive" data-workout-active-view hidden aria-live="polite">
+          <div class="workoutActive__top">
+            <button class="workoutBack" type="button" data-workout-active-back aria-label="Quay lại">←</button>
+            <div class="workoutActive__brand">
+              <span class="workoutActive__label">Đang tập</span>
+              <span class="workoutActive__planTitle" data-active-plan-title>—</span>
+            </div>
+            <span class="workoutLibrary__premium">Live</span>
+          </div>
+
+          <div class="workoutActive__timerCard">
+            <div class="workoutActive__timerK">Thời gian buổi tập</div>
+            <div class="workoutActive__timerV" data-active-elapsed>00:00</div>
+          </div>
+
+          <div class="workoutActive__progress">
+            <div class="workoutActive__progressTrack">
+              <div class="workoutActive__progressFill" data-active-progress-fill></div>
+            </div>
+            <div class="workoutActive__progressMeta">
+              <span data-active-exercise-index>Bài 1 / 1</span>
+              <span data-active-overall-pct>0%</span>
+            </div>
+          </div>
+
+          <article class="workoutActive__current card">
+            <div class="workoutActive__currentHead">
+              <img class="workoutActive__thumb" src="" alt="" data-active-exercise-img />
+              <div>
+                <h2 class="workoutActive__exTitle" data-active-exercise-name>—</h2>
+                <p class="workoutActive__exTarget muted" data-active-exercise-target>—</p>
+              </div>
+            </div>
+            <p class="workoutActive__hint muted">Đánh dấu từng set khi hoàn thành. Khi xong tất cả set, chuyển bài tiếp theo.</p>
+            <div class="workoutActive__sets" data-active-set-pills></div>
+          </article>
+
+          <div class="workoutActive__footer">
+            <button class="btn btn--primary btn--lg workoutActive__next" type="button" data-active-next hidden>Bài tiếp theo</button>
+            <button class="btn btn--ghost btn--lg workoutActive__finish" type="button" data-active-finish hidden>Hoàn thành buổi tập</button>
+          </div>
         </section>
       </div>
     </main>

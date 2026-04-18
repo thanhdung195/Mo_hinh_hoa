@@ -475,14 +475,17 @@ if (bar && val) {
     .catch(() => {});
 })();
 
-// Workout library page: list plans and show GIF exercise guide
+// Workout library page: plans, custom builder, active session
 (() => {
   const page = $('[data-workout-library]');
   if (!page) return;
 
   const listView = $('[data-workout-list-view]', page);
+  const builderView = $('[data-workout-builder-view]', page);
   const detailView = $('[data-workout-detail-view]', page);
+  const activeView = $('[data-workout-active-view]', page);
   const planListEl = $('[data-workout-plan-list]', page);
+  const customPlanListEl = $('[data-custom-plan-list]', page);
   const backBtn = $('[data-workout-back]', page);
   const planNameEl = $('[data-workout-plan-name]', page);
   const titleEl = $('[data-workout-title]', page);
@@ -490,7 +493,92 @@ if (bar && val) {
   const durationEl = $('[data-workout-duration]', page);
   const caloriesEl = $('[data-workout-calories]', page);
   const exerciseListEl = $('[data-workout-exercise-list]', page);
-  if (!listView || !detailView || !planListEl || !exerciseListEl) return;
+  const startBtn = $('[data-workout-start]', page);
+  const openBuilderBtn = $('[data-open-workout-builder]', page);
+  const builderBackBtn = $('[data-workout-builder-back]', page);
+  const exerciseRowsEl = $('[data-custom-exercise-rows]', page);
+  const planTitleInput = $('[data-custom-plan-title]', page);
+  const addRowBtn = $('[data-add-exercise-row]', page);
+  const savePlanBtn = $('[data-save-custom-plan]', page);
+  const summaryEl = $('[data-custom-plan-summary]', page);
+  const activeBackBtn = $('[data-workout-active-back]', page);
+  const activePlanTitleEl = $('[data-active-plan-title]', page);
+  const activeElapsedEl = $('[data-active-elapsed]', page);
+  const activeProgressFill = $('[data-active-progress-fill]', page);
+  const activeExIndexEl = $('[data-active-exercise-index]', page);
+  const activeOverallPctEl = $('[data-active-overall-pct]', page);
+  const activeExImg = $('[data-active-exercise-img]', page);
+  const activeExName = $('[data-active-exercise-name]', page);
+  const activeExTarget = $('[data-active-exercise-target]', page);
+  const activeSetPills = $('[data-active-set-pills]', page);
+  const activeNextBtn = $('[data-active-next]', page);
+  const activeFinishBtn = $('[data-active-finish]', page);
+
+  if (!listView || !detailView || !planListEl || !exerciseListEl || !builderView || !activeView) return;
+
+  const LS_KEY = "fittrack_custom_plans_v1";
+  const PLACEHOLDER_GIF =
+    "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=240&q=70";
+  const CUSTOM_CARD_BG =
+    "linear-gradient(135deg, rgba(30,58,95,.95) 0%, rgba(12,20,38,.98) 45%, rgba(22,36,62,.95) 100%)";
+
+  const escapeHtml = (str) =>
+    String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+  const parseExerciseTargets = (ex) => {
+    if (Number.isFinite(ex.setCount) && (Number.isFinite(ex.repCount) || typeof ex.repCount === "string")) {
+      const sc = Math.max(1, Math.floor(Number(ex.setCount)));
+      const repLabel = typeof ex.repCount === "number" ? String(ex.repCount) : String(ex.repCount || "—");
+      return { setCount: sc, repLabel };
+    }
+    const raw = String(ex.sets || "");
+    const m = raw.match(/(\d+)\s*sets?\s*x\s*(.+)/i);
+    if (m) {
+      const setCount = Math.max(1, parseInt(m[1], 10));
+      const rest = m[2].trim();
+      return { setCount, repLabel: rest };
+    }
+    const m2 = raw.match(/(\d+)\s*sets?/i);
+    if (m2) return { setCount: Math.max(1, parseInt(m2[1], 10)), repLabel: raw };
+    return { setCount: 3, repLabel: raw || "—" };
+  };
+
+  const loadCustomPlans = () => {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      const data = raw ? JSON.parse(raw) : { plans: [] };
+      return Array.isArray(data.plans) ? data.plans : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const saveCustomPlans = (arr) => {
+    localStorage.setItem(LS_KEY, JSON.stringify({ plans: arr }));
+  };
+
+  let customPlans = loadCustomPlans();
+  let currentPlan = null;
+  let timerId = null;
+  let session = null;
+
+  const setView = (name) => {
+    listView.hidden = name !== "list";
+    builderView.hidden = name !== "builder";
+    detailView.hidden = name !== "detail";
+    activeView.hidden = name !== "active";
+  };
+
+  const stopTimer = () => {
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+    }
+  };
 
   const plans = [
     {
@@ -605,10 +693,10 @@ if (bar && val) {
     planListEl.innerHTML = plans
       .map(
         (p) => `
-          <button class="workoutPlanCard" type="button" data-plan-id="${p.id}" style="background-image:url('${p.cover}')">
+          <button class="workoutPlanCard" type="button" data-plan-id="${escapeHtml(p.id)}" style="background-image:url('${p.cover.replace(/'/g, "%27")}')">
             <div class="workoutPlanCard__content">
-              <h3 class="workoutPlanCard__title">${p.title}</h3>
-              <div class="workoutPlanCard__sub">${p.subtitle}</div>
+              <h3 class="workoutPlanCard__title">${escapeHtml(p.title)}</h3>
+              <div class="workoutPlanCard__sub">${escapeHtml(p.subtitle)}</div>
             </div>
           </button>
         `
@@ -616,10 +704,81 @@ if (bar && val) {
       .join("");
   };
 
+  const normalizeStoredExercise = (e) => {
+    const name = String(e?.name || "").trim();
+    const setCount = Math.max(1, Math.floor(Number(e?.setCount) || 1));
+    const repCount = Math.max(1, Math.floor(Number(e?.repCount) || 1));
+    const minutes = Math.max(0, Number(e?.minutes) || 0);
+    return {
+      name,
+      setCount,
+      repCount,
+      minutes,
+      sets: `${setCount} sets x ${repCount} reps`,
+      gif: String(e?.gif || "").trim() || PLACEHOLDER_GIF
+    };
+  };
+
+  const storedPlanToRuntime = (sp) => {
+    const exercises = (sp.exercises || []).map(normalizeStoredExercise).filter((x) => x.name);
+    const duration =
+      Number(sp.duration) > 0
+        ? Math.round(Number(sp.duration))
+        : Math.max(1, Math.round(exercises.reduce((s, x) => s + (x.minutes || 0), 0))) || exercises.length * 8;
+    const calories =
+      Number(sp.calories) > 0 ? Math.round(Number(sp.calories)) : Math.max(120, Math.round(duration * 4.25));
+    return {
+      id: sp.id,
+      isCustom: true,
+      planName: sp.planName || "LỊCH RIÊNG",
+      title: sp.title || "TỰ TẠO",
+      subtitle: sp.subtitle || "Lịch của bạn",
+      duration,
+      calories,
+      cover: sp.cover || CUSTOM_CARD_BG,
+      exercises
+    };
+  };
+
+  const renderCustomPlans = () => {
+    if (!customPlanListEl) return;
+    if (!customPlans.length) {
+      customPlanListEl.innerHTML = '<p class="muted" style="margin:0">Chưa có lịch tự tạo. Bấm «Tạo lịch mới» để bắt đầu.</p>';
+      return;
+    }
+    customPlanListEl.innerHTML = customPlans
+      .map((sp) => {
+        const p = storedPlanToRuntime(sp);
+        const bg =
+          typeof p.cover === "string" && p.cover.startsWith("linear-gradient")
+            ? `background-image:${p.cover}`
+            : `background-image:url('${String(p.cover).replace(/'/g, "%27")}')`;
+        return `
+          <div class="workoutPlanCard workoutPlanCard--custom" style="${bg}" data-custom-card="${escapeHtml(p.id)}">
+            <div class="workoutPlanCard__badge">
+              <button class="workoutPlanCard__del" type="button" data-delete-custom="${escapeHtml(p.id)}" aria-label="Xóa lịch">×</button>
+            </div>
+            <div class="workoutPlanCard__content">
+              <h3 class="workoutPlanCard__title">${escapeHtml(p.title)}</h3>
+              <div class="workoutPlanCard__sub">${escapeHtml(p.subtitle)}</div>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  };
+
+  const findPlanById = (id) => {
+    const preset = plans.find((p) => p.id === id);
+    if (preset) return { ...preset, isCustom: false };
+    const raw = customPlans.find((p) => p.id === id);
+    return raw ? storedPlanToRuntime(raw) : null;
+  };
+
   const openDetail = (plan) => {
     if (!plan) return;
-    listView.hidden = true;
-    detailView.hidden = false;
+    currentPlan = plan;
+    setView("detail");
     planNameEl.textContent = plan.planName;
     titleEl.textContent = plan.subtitle;
     totalExerciseEl.textContent = `${plan.exercises.length} Exercises`;
@@ -629,10 +788,10 @@ if (bar && val) {
       .map(
         (ex) => `
           <article class="workoutExercise">
-            <img class="workoutExercise__gif" src="${ex.gif}" alt="${ex.name} GIF demo" loading="lazy" />
+            <img class="workoutExercise__gif" src="${escapeHtml(ex.gif)}" alt="${escapeHtml(ex.name)}" loading="lazy" />
             <div>
-              <h3 class="workoutExercise__name">${ex.name}</h3>
-              <div class="workoutExercise__meta">${ex.sets}</div>
+              <h3 class="workoutExercise__name">${escapeHtml(ex.name)}</h3>
+              <div class="workoutExercise__meta">${escapeHtml(ex.sets)}</div>
             </div>
           </article>
         `
@@ -641,17 +800,244 @@ if (bar && val) {
   };
 
   const closeDetail = () => {
-    detailView.hidden = true;
-    listView.hidden = false;
+    currentPlan = null;
+    setView("list");
+  };
+
+  const exerciseRowTemplate = () => `
+    <div class="workoutBuilderRow" data-builder-row>
+      <div class="field">
+        <label class="field__label">Tên bài tập</label>
+        <input class="field__input profileInput" type="text" data-f-name placeholder="Ví dụ: Squat" autocomplete="off" />
+      </div>
+      <div class="workoutBuilderRow__grid">
+        <div class="field workoutBuilderRow__mini">
+          <label class="field__label">Set</label>
+          <input class="field__input profileInput" type="number" min="1" step="1" data-f-sets value="3" />
+        </div>
+        <div class="field workoutBuilderRow__mini">
+          <label class="field__label">Rep</label>
+          <input class="field__input profileInput" type="number" min="1" step="1" data-f-reps value="10" />
+        </div>
+        <div class="field workoutBuilderRow__mini workoutBuilderRow__mini--wide">
+          <label class="field__label">Phút (bài này)</label>
+          <input class="field__input profileInput" type="number" min="0" step="1" data-f-min value="8" />
+        </div>
+        <button class="workoutBuilderRow__del" type="button" data-remove-row aria-label="Xóa dòng">×</button>
+      </div>
+    </div>
+  `;
+
+  const readBuilderRows = () => {
+    const rows = $$("[data-builder-row]", exerciseRowsEl);
+    return rows
+      .map((row) => {
+        const name = ($("[data-f-name]", row)?.value || "").trim();
+        const setCount = Math.max(1, Math.floor(Number($("[data-f-sets]", row)?.value) || 1));
+        const repCount = Math.max(1, Math.floor(Number($("[data-f-reps]", row)?.value) || 1));
+        const minutes = Math.max(0, Number($("[data-f-min]", row)?.value) || 0);
+        return { name, setCount, repCount, minutes };
+      })
+      .filter((r) => r.name);
+  };
+
+  const updateBuilderSummary = () => {
+    if (!summaryEl) return;
+    const rows = readBuilderRows();
+    const totalMin = rows.reduce((s, r) => s + r.minutes, 0);
+    summaryEl.textContent = `Tổng thời gian ước lượng: ${totalMin || 0} phút (${rows.length} bài)`;
+  };
+
+  const openBuilder = () => {
+    if (planTitleInput) planTitleInput.value = "";
+    if (exerciseRowsEl) {
+      exerciseRowsEl.innerHTML = exerciseRowTemplate() + exerciseRowTemplate();
+    }
+    updateBuilderSummary();
+    setView("builder");
+  };
+
+  const saveBuilderPlan = () => {
+    const title = (planTitleInput?.value || "").trim();
+    const rows = readBuilderRows();
+    if (!title) {
+      alert("Vui lòng nhập tên lịch.");
+      return;
+    }
+    if (!rows.length) {
+      alert("Thêm ít nhất một bài tập (tên bài không được để trống).");
+      return;
+    }
+    const totalMin = rows.reduce((s, r) => s + r.minutes, 0) || Math.max(8, rows.length * 8);
+    const id = `custom_${Date.now().toString(36)}`;
+    const cardTitle = title.length > 14 ? `${title.slice(0, 14)}…` : title;
+    const stored = {
+      id,
+      planName: "LỊCH RIÊNG",
+      title: cardTitle.toUpperCase(),
+      subtitle: title,
+      duration: Math.round(totalMin),
+      calories: Math.max(120, Math.round(totalMin * 4.25)),
+      cover: CUSTOM_CARD_BG,
+      exercises: rows.map((r) => ({
+        name: r.name,
+        setCount: r.setCount,
+        repCount: r.repCount,
+        minutes: r.minutes
+      }))
+    };
+    customPlans = [stored, ...customPlans.filter((p) => p.id !== id)];
+    saveCustomPlans(customPlans);
+    renderCustomPlans();
+    openDetail(storedPlanToRuntime(stored));
+  };
+
+  const refreshActiveProgress = () => {
+    if (!session || !currentPlan) return;
+    const exs = currentPlan.exercises;
+    const t = parseExerciseTargets(exs[session.exerciseIndex]);
+    const doneN = session.setDone.filter(Boolean).length;
+    const frac = t.setCount ? doneN / t.setCount : 0;
+    const pct = Math.min(100, Math.round(((session.exerciseIndex + frac) / exs.length) * 100));
+    if (activeProgressFill) activeProgressFill.style.width = `${pct}%`;
+    if (activeOverallPctEl) activeOverallPctEl.textContent = `${pct}%`;
+    if (activeExIndexEl) activeExIndexEl.textContent = `Bài ${session.exerciseIndex + 1} / ${exs.length}`;
+  };
+
+  const renderActiveExercise = () => {
+    if (!session || !currentPlan) return;
+    const ex = currentPlan.exercises[session.exerciseIndex];
+    const t = parseExerciseTargets(ex);
+    session.setDone = Array.from({ length: t.setCount }, () => false);
+    if (activeExImg) {
+      activeExImg.src = ex.gif || PLACEHOLDER_GIF;
+      activeExImg.alt = ex.name;
+    }
+    if (activeExName) activeExName.textContent = ex.name;
+    if (activeExTarget) activeExTarget.textContent = `Mục tiêu: ${t.setCount} set × ${t.repLabel}`;
+    if (activeSetPills) {
+      activeSetPills.innerHTML = "";
+      for (let i = 0; i < t.setCount; i += 1) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "workoutSetPill";
+        b.textContent = `Set ${i + 1}`;
+        b.dataset.setIndex = String(i);
+        activeSetPills.appendChild(b);
+      }
+    }
+    if (activeNextBtn) activeNextBtn.hidden = true;
+    if (activeFinishBtn) activeFinishBtn.hidden = true;
+    refreshActiveProgress();
+  };
+
+  const onSetPillClick = (e) => {
+    if (!session || !currentPlan) return;
+    const pill = e.target.closest(".workoutSetPill");
+    if (!pill || !activeSetPills?.contains(pill)) return;
+    const idx = Number(pill.dataset.setIndex);
+    if (!Number.isFinite(idx)) return;
+    session.setDone[idx] = !session.setDone[idx];
+    pill.classList.toggle("is-done", session.setDone[idx]);
+    const t = parseExerciseTargets(currentPlan.exercises[session.exerciseIndex]);
+    const allDone = session.setDone.length && session.setDone.every(Boolean);
+    const lastEx = session.exerciseIndex >= currentPlan.exercises.length - 1;
+    if (activeNextBtn) activeNextBtn.hidden = !(allDone && !lastEx);
+    if (activeFinishBtn) activeFinishBtn.hidden = !(allDone && lastEx);
+    refreshActiveProgress();
+  };
+
+  const startActiveSession = () => {
+    if (!currentPlan || !currentPlan.exercises.length) return;
+    stopTimer();
+    session = {
+      exerciseIndex: 0,
+      setDone: [],
+      startedAt: Date.now()
+    };
+    if (activePlanTitleEl) activePlanTitleEl.textContent = currentPlan.subtitle || currentPlan.title;
+    if (activeElapsedEl) activeElapsedEl.textContent = "00:00";
+    timerId = setInterval(() => {
+      if (!session || !activeElapsedEl) return;
+      const sec = Math.floor((Date.now() - session.startedAt) / 1000);
+      const m = String(Math.floor(sec / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      activeElapsedEl.textContent = `${m}:${s}`;
+    }, 1000);
+    setView("active");
+    renderActiveExercise();
+  };
+
+  const goNextExercise = () => {
+    if (!session || !currentPlan) return;
+    session.exerciseIndex += 1;
+    if (session.exerciseIndex >= currentPlan.exercises.length) return;
+    renderActiveExercise();
+  };
+
+  const endActiveSession = (toDetail) => {
+    stopTimer();
+    session = null;
+    if (toDetail && currentPlan) {
+      openDetail(currentPlan);
+    } else {
+      currentPlan = null;
+      setView("list");
+    }
   };
 
   renderPlans();
+  renderCustomPlans();
+
   planListEl.addEventListener("click", (e) => {
     const card = e.target.closest("[data-plan-id]");
     if (!card) return;
-    const selected = plans.find((p) => p.id === card.getAttribute("data-plan-id"));
+    const selected = findPlanById(card.getAttribute("data-plan-id"));
     openDetail(selected);
   });
+
+  customPlanListEl?.addEventListener("click", (e) => {
+    const del = e.target.closest("[data-delete-custom]");
+    if (del) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = del.getAttribute("data-delete-custom");
+      customPlans = customPlans.filter((p) => p.id !== id);
+      saveCustomPlans(customPlans);
+      renderCustomPlans();
+      return;
+    }
+    const card = e.target.closest("[data-custom-card]");
+    if (!card) return;
+    const id = card.getAttribute("data-custom-card");
+    const selected = findPlanById(id);
+    openDetail(selected);
+  });
+
   backBtn?.addEventListener("click", closeDetail);
+  openBuilderBtn?.addEventListener("click", openBuilder);
+  builderBackBtn?.addEventListener("click", () => setView("list"));
+  addRowBtn?.addEventListener("click", () => {
+    exerciseRowsEl?.insertAdjacentHTML("beforeend", exerciseRowTemplate());
+    updateBuilderSummary();
+  });
+  exerciseRowsEl?.addEventListener("input", updateBuilderSummary);
+  exerciseRowsEl?.addEventListener("click", (e) => {
+    if (e.target.closest("[data-remove-row]")) {
+      const row = e.target.closest("[data-builder-row]");
+      const rows = $$("[data-builder-row]", exerciseRowsEl);
+      if (rows.length <= 1) return;
+      row?.remove();
+      updateBuilderSummary();
+    }
+  });
+  savePlanBtn?.addEventListener("click", saveBuilderPlan);
+  startBtn?.addEventListener("click", startActiveSession);
+  activeNextBtn?.addEventListener("click", goNextExercise);
+  activeFinishBtn?.addEventListener("click", () => endActiveSession(true));
+  activeBackBtn?.addEventListener("click", () => {
+    if (confirm("Kết thúc buổi tập và quay lại?")) endActiveSession(true);
+  });
+  activeSetPills?.addEventListener("click", onSetPillClick);
 })();
 
