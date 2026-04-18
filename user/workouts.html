@@ -62,15 +62,9 @@
       <div class="container">
         <section class="workoutLibrary card" data-workout-list-view>
           <div class="workoutLibrary__head">
-            <h1 class="workoutLibrary__title">Library</h1>
-            <span class="workoutLibrary__premium">Premium</span>
+            <h1 class="workoutLibrary__title workoutLibrary__title--rec">Recommend workout plans</h1>
           </div>
-          <p class="muted workoutLibrary__desc">Choose a guided plan and learn each movement with GIF instructions.</p>
-          <div class="workoutFilters" role="group" aria-label="Workout filters">
-            <button class="workoutChip is-active" type="button">Equipment (65)</button>
-            <button class="workoutChip" type="button">Muscles (16)</button>
-            <button class="workoutChip" type="button">45-60 min</button>
-          </div>
+          <p class="muted workoutLibrary__desc">Choose a guided plan and preview each movement with clear demo images.</p>
           <h2 class="workoutLibrary__sub">Plans for this week</h2>
           <div class="workoutPlanList" data-workout-plan-list></div>
 
@@ -86,7 +80,7 @@
           <div class="workoutDetail__top">
             <button class="workoutBack" type="button" data-workout-builder-back>←</button>
             <div class="workoutDetail__planName">TẠO LỊCH</div>
-            <span class="workoutLibrary__premium">Premium</span>
+            <span class="workoutTopSpacer" aria-hidden="true"></span>
           </div>
           <article class="workoutDetail__card workoutBuilder__card">
             <h2 class="workoutDetail__title workoutBuilder__title">Lịch tập của bạn</h2>
@@ -107,7 +101,7 @@
           <div class="workoutDetail__top">
             <button class="workoutBack" type="button" data-workout-back>←</button>
             <div class="workoutDetail__planName" data-workout-plan-name>PLAN 1</div>
-            <span class="workoutLibrary__premium">Premium</span>
+            <span class="workoutTopSpacer" aria-hidden="true"></span>
           </div>
 
           <article class="workoutDetail__card card">
@@ -130,7 +124,7 @@
               <span class="workoutActive__label">Đang tập</span>
               <span class="workoutActive__planTitle" data-active-plan-title>—</span>
             </div>
-            <span class="workoutLibrary__premium">Live</span>
+            <span class="workoutTopSpacer" aria-hidden="true"></span>
           </div>
 
           <div class="workoutActive__timerCard">

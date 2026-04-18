@@ -1,6 +1,66 @@
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+const FITTRACK_WEIGHT_LOG_KEY = "fittrack_weight_log_v1";
+
+function fittrackIsoDate(ms) {
+  const d = new Date(ms);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** Normalize to { date, weight, t } for the weight progress chart. */
+function fittrackNormalizeWeightEntry(e) {
+  if (!e) return null;
+  if (Number.isFinite(Number(e.weight)) && e.date) {
+    const w = Number(e.weight);
+    let t = e.t;
+    if (!Number.isFinite(t)) t = new Date(`${String(e.date)}T12:00:00`).getTime();
+    return { date: String(e.date), weight: w, t };
+  }
+  if (Number.isFinite(Number(e.kg))) {
+    const w = Number(e.kg);
+    const d = String(e.d || "");
+    let t = e.t;
+    if (!Number.isFinite(t) && d) t = new Date(`${d}T12:00:00`).getTime();
+    if (!Number.isFinite(t)) t = Date.now();
+    return { date: d || fittrackIsoDate(t), weight: w, t };
+  }
+  return null;
+}
+
+function fittrackPointTime(p) {
+  if (p && Number.isFinite(p.t)) return Number(p.t);
+  if (p && p.date) return new Date(`${String(p.date)}T12:00:00`).getTime();
+  return 0;
+}
+
+/**
+ * Append `{ date, weight, t }` when the user’s weight value changes (Profile save or Progress load).
+ * Skips duplicate consecutive values so the log stays one point per real update.
+ * Chart: X = time (date), Y = kg; first entry in the log is always the initial weight.
+ */
+function fittrackAppendWeightSnapshot(profileKg) {
+  if (!Number.isFinite(profileKg) || profileKg <= 0) return;
+  try {
+    const arr = JSON.parse(localStorage.getItem(FITTRACK_WEIGHT_LOG_KEY) || "[]");
+    if (!Array.isArray(arr)) return;
+    const next = arr
+      .map(fittrackNormalizeWeightEntry)
+      .filter(Boolean)
+      .sort((a, b) => fittrackPointTime(a) - fittrackPointTime(b));
+    const last = next[next.length - 1];
+    if (last && Number(last.weight) === profileKg) return;
+    const t = Date.now();
+    next.push({ date: fittrackIsoDate(t), weight: profileKg, t });
+    localStorage.setItem(FITTRACK_WEIGHT_LOG_KEY, JSON.stringify(next.slice(-400)));
+  } catch {
+    /* ignore */
+  }
+}
+
 // Active nav link (marketing + /app/* on Express)
 (() => {
   const raw = (location.pathname || "").toLowerCase();
@@ -238,6 +298,10 @@ if (bar && val) {
       if (!r.ok) throw new Error('Save failed');
       const data = await r.json();
       const p = data?.profile;
+      const savedKg = Number(p?.weight_kg);
+      if (Number.isFinite(savedKg) && savedKg > 0) {
+        fittrackAppendWeightSnapshot(savedKg);
+      }
       if (activeStreakEl) activeStreakEl.textContent = String(p?.active_streak || 0);
       if (msg) msg.textContent = 'Saved successfully.';
     } catch {
@@ -379,7 +443,247 @@ if (bar && val) {
     calMonthEl.textContent = new Date().toLocaleDateString("vi-VN", { month: "long", year: "numeric" });
   }
 
+  const chartSvg = $("[data-weight-chart-svg]");
+
   const fmt = (n) => (Number.isFinite(n) ? n : 0);
+
+  const MS_DAY = 86400000;
+
+  const loadWeightLog = () => {
+    try {
+      const arr = JSON.parse(localStorage.getItem(FITTRACK_WEIGHT_LOG_KEY) || "[]");
+      if (!Array.isArray(arr)) return [];
+      return arr
+        .map(fittrackNormalizeWeightEntry)
+        .filter(Boolean)
+        .sort((a, b) => fittrackPointTime(a) - fittrackPointTime(b));
+    } catch {
+      return [];
+    }
+  };
+
+  const POINTS_PER_SEGMENT = 14;
+
+  /**
+   * Weight line chart data: chronological points from first logged weigh-in to latest.
+   * X-axis maps each point’s time (`t` / `date`); Y-axis is `weight` (kg).
+   * `displayPoints[0]` is always the user’s initial weight (oldest log entry).
+   * `linePoints` connects every point in order, plus an optional flat tail to “now”.
+   */
+  const buildDisplayPoints = (log, profileKg) => {
+    const sorted = [...log].sort((a, b) => fittrackPointTime(a) - fittrackPointTime(b));
+    const tNow = Date.now();
+    if (!sorted.length) {
+      if (!(Number.isFinite(profileKg) && profileKg > 0)) {
+        return { displayPoints: [], linePoints: [], tMin: tNow - 1, tMax: tNow };
+      }
+      const p = { date: fittrackIsoDate(tNow), weight: profileKg, t: tNow };
+      return {
+        displayPoints: [p],
+        linePoints: [p, { date: fittrackIsoDate(tNow + MS_DAY), weight: profileKg, t: tNow + MS_DAY, _virtual: true }],
+        tMin: tNow - MS_DAY,
+        tMax: tNow + MS_DAY
+      };
+    }
+
+    const displayPoints = [...sorted];
+
+    let tMin = fittrackPointTime(displayPoints[0]);
+    let tMax = Math.max(tNow, fittrackPointTime(displayPoints[displayPoints.length - 1]));
+    if (tMax <= tMin) tMax = tMin + MS_DAY;
+
+    const linePoints = [...displayPoints];
+    const last = linePoints[linePoints.length - 1];
+    if (fittrackPointTime(last) < tNow - 36e5) {
+      linePoints.push({
+        date: fittrackIsoDate(tNow),
+        weight: last.weight,
+        t: tNow,
+        _virtual: true
+      });
+      tMax = tNow;
+    }
+
+    return { displayPoints, linePoints, tMin, tMax };
+  };
+
+  const buildDenseSmoothPolyline = (linePoints, tMin, tMax, plotL, plotR, yFromKg) => {
+    if (!linePoints.length) return [];
+    const span = Math.max(1, tMax - tMin);
+    const xy = [];
+    for (let i = 0; i < linePoints.length - 1; i += 1) {
+      const a = linePoints[i];
+      const b = linePoints[i + 1];
+      const ta = fittrackPointTime(a);
+      const tb = fittrackPointTime(b);
+      for (let s = 0; s < POINTS_PER_SEGMENT; s += 1) {
+        const u = s / POINTS_PER_SEGMENT;
+        const t = ta + u * (tb - ta);
+        const w = a.weight + u * (b.weight - a.weight);
+        const ux = (t - tMin) / span;
+        xy.push({ x: plotL + Math.max(0, Math.min(1, ux)) * (plotR - plotL), y: yFromKg(w) });
+      }
+    }
+    const L = linePoints[linePoints.length - 1];
+    const uu = (fittrackPointTime(L) - tMin) / span;
+    xy.push({
+      x: plotL + Math.max(0, Math.min(1, uu)) * (plotR - plotL),
+      y: yFromKg(L.weight)
+    });
+    return xy;
+  };
+
+  const smoothLineD = (points) => {
+    if (points.length < 2) return "";
+    let d = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i += 1) {
+      const p0 = points[i];
+      const p1 = points[i + 1];
+      const c1x = p0.x + (p1.x - p0.x) / 3;
+      const c1y = p0.y;
+      const c2x = p0.x + (2 * (p1.x - p0.x)) / 3;
+      const c2y = p1.y;
+      d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p1.x} ${p1.y}`;
+    }
+    return d;
+  };
+
+  const clearWeightChartDrawings = (svg) => {
+    const labels = svg.querySelector("[data-weight-chart-labels]");
+    if (labels) labels.innerHTML = "";
+  };
+
+  const formatWeightPointLabel = (w) => {
+    const n = Number(w);
+    if (!Number.isFinite(n)) return "";
+    return Number.isInteger(n) ? String(Math.round(n)) : n.toFixed(1);
+  };
+
+  const drawWeightMilestoneLabels = (svg, displayPoints, tMin, tMax, yFromKg, xl, xr) => {
+    const g = svg.querySelector("[data-weight-chart-labels]");
+    if (!g || !displayPoints.length) return;
+    g.innerHTML = "";
+    const NS = "http://www.w3.org/2000/svg";
+    const span = Math.max(1, tMax - tMin);
+    const MIN_LABEL_X = 42;
+    let lastLabelX = -1e9;
+    let lastLabelStr = "";
+    const n = displayPoints.length;
+    displayPoints.forEach((p, idx) => {
+      if (p._virtual) return;
+      const tMs = fittrackPointTime(p);
+      const u = (tMs - tMin) / span;
+      const x = xl + Math.max(0, Math.min(1, u)) * (xr - xl);
+      const y = yFromKg(p.weight);
+      const labelStr = formatWeightPointLabel(p.weight);
+      const isFirst = idx === 0;
+      const isLast = idx === n - 1;
+      const weightChanged = labelStr !== lastLabelStr;
+      const farFromLastLabel = Math.abs(x - lastLabelX) >= MIN_LABEL_X;
+      const showText =
+        isFirst ||
+        (!isLast && (weightChanged || farFromLastLabel)) ||
+        (isLast && (n === 1 || farFromLastLabel || labelStr !== lastLabelStr));
+
+      const circ = document.createElementNS(NS, "circle");
+      circ.setAttribute("class", "chartDeltaDot");
+      circ.setAttribute("cx", String(x));
+      circ.setAttribute("cy", String(y));
+      circ.setAttribute("r", "4.5");
+      g.appendChild(circ);
+
+      if (showText) {
+        const stagger =
+          !isFirst && !farFromLastLabel && weightChanged && Math.abs(x - lastLabelX) < MIN_LABEL_X ? 16 : 0;
+        const txt = document.createElementNS(NS, "text");
+        txt.setAttribute("class", "chartPointLabel");
+        txt.setAttribute("x", String(x));
+        txt.setAttribute("y", String(y - 12 - stagger));
+        txt.setAttribute("text-anchor", "middle");
+        txt.setAttribute("dominant-baseline", "auto");
+        txt.textContent = labelStr;
+        g.appendChild(txt);
+        lastLabelX = x;
+        lastLabelStr = labelStr;
+      }
+    });
+  };
+
+  const renderDeltaWeightChart = (svg, profileKg) => {
+    const area = svg.querySelector("[data-weight-area]");
+    const line = svg.querySelector("[data-weight-line]");
+    if (!area || !line) return null;
+
+    if (!Number.isFinite(profileKg) || profileKg <= 0) {
+      clearWeightChartDrawings(svg);
+      line.setAttribute("d", "");
+      area.setAttribute("d", "");
+      return null;
+    }
+
+    fittrackAppendWeightSnapshot(profileKg);
+    const log = loadWeightLog();
+
+    const { displayPoints, linePoints, tMin, tMax } = buildDisplayPoints(log, profileKg);
+    if (!displayPoints.length) {
+      clearWeightChartDrawings(svg);
+      line.setAttribute("d", "");
+      area.setAttribute("d", "");
+      return null;
+    }
+
+    const plotL = 20;
+    const plotR = 540;
+    const plotT = 22;
+    const plotB = 168;
+    const areaFloor = 186;
+
+    const W0 = displayPoints[0].weight;
+    const weights = linePoints.map((p) => p.weight);
+    let kMin = Math.min(...weights, W0);
+    let kMax = Math.max(...weights, W0);
+    if (Math.abs(kMax - kMin) < 1e-6) {
+      kMin -= 1;
+      kMax += 1;
+    }
+    if (kMax - kMin < 0.35) {
+      kMin -= 0.4;
+      kMax += 0.4;
+    }
+    const pad = Math.max(0.15, (kMax - kMin) * 0.08);
+    kMin -= pad;
+    kMax += pad;
+
+    const yFromKg = (kg) => {
+      if (kMax === kMin) return (plotT + plotB) / 2;
+      return plotB - ((kg - kMin) / (kMax - kMin)) * (plotB - plotT);
+    };
+
+    let xy = buildDenseSmoothPolyline(linePoints, tMin, tMax, plotL, plotR, yFromKg);
+    if (xy.length < 2) {
+      const p0 = xy[0] || { x: (plotL + plotR) / 2, y: yFromKg(linePoints[0].weight) };
+      xy = [p0, { x: p0.x + 40, y: p0.y }];
+    }
+    const lineD = smoothLineD(xy);
+    line.setAttribute("d", lineD);
+    area.setAttribute("d", `${lineD} L ${plotR} ${areaFloor} L ${plotL} ${areaFloor} Z`);
+
+    drawWeightMilestoneLabels(svg, displayPoints, tMin, tMax, yFromKg, plotL, plotR);
+
+    const lastReal = displayPoints[displayPoints.length - 1];
+    const lastKg = lastReal.weight;
+    const totalDelta = lastKg - W0;
+    const pctVsInitial =
+      W0 > 0 && Number.isFinite(lastKg) ? ((lastKg - W0) / W0) * 100 : null;
+    svg.setAttribute(
+      "aria-label",
+      `Weight line chart: date on horizontal axis, kg on vertical axis; from ${W0.toFixed(
+        1
+      )} kg (first entry) to ${lastKg.toFixed(1)} kg.`
+    );
+
+    return { W0, lastKg, totalDelta, pctVsInitial };
+  };
 
   Promise.all([
     fetch('/api/workouts', { headers: { Accept: 'application/json' } }).then((r) => (r.ok ? r.json() : { workouts: [] })),
@@ -434,13 +738,46 @@ if (bar && val) {
         el.textContent = calories.toLocaleString();
       });
       if (consistencyEl) consistencyEl.textContent = `${consistency}%`;
-      if (weightChangeEl) {
-        weightChangeEl.textContent = "—";
-        weightChangeEl.title = "Demo: biến thiên cân cần lịch sử đo; hiện chỉ lưu một giá trị trên Profile.";
-      }
       currentWeightEls.forEach((el) => {
         el.textContent = fmt(weight).toFixed(1);
       });
+      const trendWtEl = $("[data-progress-trend-current-weight]");
+      const trendPctEl = $("[data-progress-trend-pct]");
+      if (trendWtEl) {
+        trendWtEl.textContent = weight > 0 ? fmt(weight).toFixed(1) : "—";
+      }
+      if (trendPctEl) {
+        trendPctEl.textContent = "—";
+        trendPctEl.classList.remove("is-loss", "is-gain", "is-flat");
+        trendPctEl.classList.add("is-flat");
+      }
+      let weightDeltaInfo = null;
+      if (chartSvg) {
+        weightDeltaInfo = renderDeltaWeightChart(chartSvg, weight);
+      }
+      if (trendPctEl && weightDeltaInfo && weightDeltaInfo.pctVsInitial != null) {
+        const p = weightDeltaInfo.pctVsInitial;
+        trendPctEl.classList.remove("is-loss", "is-gain", "is-flat");
+        if (Math.abs(p) < 0.05) {
+          trendPctEl.classList.add("is-flat");
+          trendPctEl.textContent = "0%";
+        } else {
+          const sign = p > 0 ? "+" : "";
+          trendPctEl.textContent = `${sign}${p.toFixed(1)}%`;
+          if (p < 0) trendPctEl.classList.add("is-loss");
+          else trendPctEl.classList.add("is-gain");
+        }
+      }
+      if (weightChangeEl) {
+        if (weightDeltaInfo && Number.isFinite(weightDeltaInfo.totalDelta)) {
+          const td = weightDeltaInfo.totalDelta;
+          weightChangeEl.textContent = `${td >= 0 ? "+" : ""}${td.toFixed(1)} kg`;
+          weightChangeEl.title = `Chênh lệch so với cân mốc lần đầu ghi (${weightDeltaInfo.W0.toFixed(1)} kg).`;
+        } else {
+          weightChangeEl.textContent = "—";
+          weightChangeEl.title = "Nhập cân trên Profile để có mốc so sánh và biểu đồ.";
+        }
+      }
       if (streakEl) streakEl.textContent = String(profile.active_streak || 0);
       if (prsEl) prsEl.textContent = `+${prs}`;
       if (volumeEl) volumeEl.textContent = Math.round(volume).toLocaleString();
@@ -518,7 +855,7 @@ if (bar && val) {
 
   const LS_KEY = "fittrack_custom_plans_v1";
   const PLACEHOLDER_GIF =
-    "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=240&q=70";
+    "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=400&q=80";
   const CUSTOM_CARD_BG =
     "linear-gradient(135deg, rgba(30,58,95,.95) 0%, rgba(12,20,38,.98) 45%, rgba(22,36,62,.95) 100%)";
 
@@ -589,37 +926,37 @@ if (bar && val) {
       duration: 58,
       calories: 246,
       cover:
-        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1400&q=70",
+        "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=80",
       exercises: [
         {
           name: "Barbell Back Squat",
           sets: "4 sets x 6-8 reps",
-          gif: "https://media.giphy.com/media/3o7TKMt1VVNkHV2PaE/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Barbell Bench Press",
           sets: "3 sets x 6-8 reps",
-          gif: "https://media.giphy.com/media/l0Exh5setxQl10lUI/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Seated DB Overhead Press",
           sets: "4 sets x 10-12 reps",
-          gif: "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1583454110551-21f2fa296cfe?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Overhand Grip Lat Pulldown",
           sets: "4 sets x 8-10 reps",
-          gif: "https://media.giphy.com/media/xT9IgzoKnwFNmISR8I/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1540497077851-095a2f89b5ba?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Roman Chair Back Extension",
           sets: "4 sets x 8-10 reps",
-          gif: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Hack Squat",
           sets: "4 sets x 10-12 reps",
-          gif: "https://media.giphy.com/media/Ju7l5y9osyymQ/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1434609446631-334449a247e0?auto=format&fit=crop&w=600&q=80"
         }
       ]
     },
@@ -631,27 +968,27 @@ if (bar && val) {
       duration: 52,
       calories: 221,
       cover:
-        "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=1400&q=70",
+        "https://images.unsplash.com/photo-1518611012118-696072aa981a?auto=format&fit=crop&w=1400&q=80",
       exercises: [
         {
           name: "Incline DB Press",
           sets: "4 sets x 8-10 reps",
-          gif: "https://media.giphy.com/media/l41lVsYDBC0UVQJCE/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Walking Lunge",
           sets: "3 sets x 12-14 reps",
-          gif: "https://media.giphy.com/media/26tPplGWjN0xLybiU/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1518611012118-696072aa981a?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Cable Row",
           sets: "4 sets x 10-12 reps",
-          gif: "https://media.giphy.com/media/l4FGjNNQYCrC7ZvoI/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Mountain Climber",
           sets: "3 sets x 40 sec",
-          gif: "https://media.giphy.com/media/l3vR4n3mPNJn37vb2/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1434682886298-185a09d6cbde?auto=format&fit=crop&w=600&q=80"
         }
       ]
     },
@@ -663,27 +1000,27 @@ if (bar && val) {
       duration: 64,
       calories: 302,
       cover:
-        "https://images.unsplash.com/photo-1534367610401-9f5ed68180aa?auto=format&fit=crop&w=1400&q=70",
+        "https://images.unsplash.com/photo-1526506118085-81ce109bd9e6?auto=format&fit=crop&w=1400&q=80",
       exercises: [
         {
           name: "Deadlift",
           sets: "5 sets x 3-5 reps",
-          gif: "https://media.giphy.com/media/xT9IgAakXAITtXIWje/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Push Press",
           sets: "4 sets x 5 reps",
-          gif: "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Weighted Pull Up",
           sets: "4 sets x 6 reps",
-          gif: "https://media.giphy.com/media/l0HU20BZ6LbSEITza/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1526506118085-81ce109bd9e6?auto=format&fit=crop&w=600&q=80"
         },
         {
           name: "Front Squat",
           sets: "4 sets x 6 reps",
-          gif: "https://media.giphy.com/media/3ohs4w2Qf8J5tNn4pW/giphy.gif"
+          gif: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80"
         }
       ]
     }

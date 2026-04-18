@@ -87,42 +87,35 @@
               <div class="trendTop">
                 <div>
                   <div class="trendTitle">Weight Trend</div>
-                  <div class="trendSub">Last 90 days (avg)</div>
+                  <div class="trendSub">Date × kg · from your first weigh-in</div>
                 </div>
-                <div class="trendValue"><span data-progress-current-weight>0</span> kg</div>
+                <div class="trendMetric">
+                  <div class="trendMetric__kg">
+                    <span data-progress-trend-current-weight>—</span><span class="trendMetric__unit"> kg</span>
+                  </div>
+                  <div class="trendMetric__pct" data-progress-trend-pct>—</div>
+                </div>
               </div>
 
-              <div class="chart chart--line" role="img" aria-label="Weight trend line chart">
-                <svg viewBox="0 0 560 240" width="100%" height="240" aria-hidden="true">
+              <div class="chart chart--line chart--minimal" role="img" aria-label="Weight trend" data-weight-chart-wrap>
+                <svg viewBox="0 0 560 200" width="100%" height="200" aria-hidden="true" data-weight-chart-svg>
                   <defs>
-                    <linearGradient id="pLine" x1="0" x2="1">
-                      <stop offset="0" stop-color="rgba(78,162,255,0.98)" />
-                      <stop offset="1" stop-color="rgba(73,255,214,0.45)" />
-                    </linearGradient>
                     <linearGradient id="pArea" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0" stop-color="rgba(78,162,255,0.22)" />
+                      <stop offset="0" stop-color="rgba(78,162,255,0.20)" />
                       <stop offset="1" stop-color="rgba(78,162,255,0.02)" />
                     </linearGradient>
                   </defs>
-
-                  <g opacity="0.22">
-                    <path d="M40 30H520" stroke="rgba(255,255,255,0.10)" />
-                    <path d="M40 80H520" stroke="rgba(255,255,255,0.08)" />
-                    <path d="M40 130H520" stroke="rgba(255,255,255,0.06)" />
-                    <path d="M40 180H520" stroke="rgba(255,255,255,0.05)" />
-                  </g>
-
+                  <path data-weight-area d="" fill="url(#pArea)" />
                   <path
-                    d="M40 170 C 80 150, 120 165, 160 152 C 200 140, 240 124, 280 132 C 320 140, 360 120, 400 110 C 440 100, 480 86, 520 92 L 520 210 L 40 210 Z"
-                    fill="url(#pArea)"
-                  />
-                  <path
-                    d="M40 170 C 80 150, 120 165, 160 152 C 200 140, 240 124, 280 132 C 320 140, 360 120, 400 110 C 440 100, 480 86, 520 92"
+                    data-weight-line
+                    d=""
                     fill="none"
-                    stroke="url(#pLine)"
-                    stroke-width="4"
+                    stroke="rgba(78,162,255,0.95)"
+                    stroke-width="3"
                     stroke-linecap="round"
+                    stroke-linejoin="round"
                   />
+                  <g data-weight-chart-labels></g>
                 </svg>
               </div>
             </div>
